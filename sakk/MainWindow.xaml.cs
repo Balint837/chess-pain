@@ -20,10 +20,23 @@ namespace sakk
     /// </summary>
     public partial class MainWindow : Window
     {
+        public string this[int x,int y]
+        {
+            get
+            {
+                return "lol";
+            }
+        }
+
+        System.Range operator ..(Point start, Point end = ^0)
+        {
+
+        };
         public MainWindow()
         {
             InitializeComponent();
-            BitmapImage
+            MessageBox.Show($"{this[1, 1]}");
+            MessageBox.Show($"{this[""]}");
             var c = new List<gyumolcs>() { new alma(), new banan() };
             c.ForEach(v => {
                 v.erik();
