@@ -8,8 +8,6 @@
 - static class Utils
 - - static List<Point> PointsOr(matrix1, matrix2)
 - - static List<Point> PointsAnd(matrix1, matrix2)
-- - static bool MatrixAny(matrix)
-- - static bool MatrixCount(matrix, until*)
 
 
 
