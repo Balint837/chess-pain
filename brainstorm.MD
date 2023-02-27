@@ -1,7 +1,7 @@
 # Classes
 **Giving a \* to a parameter means that it's optional.'**
 - class MainWindow
-- - ChessPiece[8,8] pieces
+- - Board pieces
 
 
 
@@ -28,6 +28,8 @@
 - - bool Contains(x,y)
 - - static bool IsPointLegal(p) => return 0<=X,Y<=8
 - - static bool FilterPoints(pointList) => pointList.Where(p => IsPointLegal(p))
+- - void SetStartingPosition() => Sets default start position
+- - void SetStartingPosition(chessPieceList) => For the editor
 
 
 
