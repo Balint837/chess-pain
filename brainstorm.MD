@@ -6,8 +6,8 @@
 
 
 - static class Utils
-- - static bool[8,8] MatrixOr(matrix1, matrix2)
-- - static bool[8,8] MatrixAnd(matrix1, matrix2)
+- - static List<Point> PointsOr(matrix1, matrix2)
+- - static List<Point> PointsAnd(matrix1, matrix2)
 - - static bool MatrixAny(matrix)
 - - static bool MatrixCount(matrix, until*)
 
@@ -16,14 +16,21 @@
 - class Point
 - - int X
 - - int Y
-- - operator -(Point p1, Point p2)
+- - operator -(p1, p2)
+- - operator +(p1, p2)
+- - bool IsEqual(p) => whether X,Y of instance is equal to X,Y of p
 
 
 
 - class Board
 - - **Grants the ability to query positions with both Point and matrix operands**
-- - ChessPiece this[Point]
+- - ChessPiece this[point]
 - - ChessPiece this[x,y]
+- - bool Contains(p)
+- - bool Contains(x,y)
+- - static bool IsPointLegal(p) => return 0<=X,Y<=8
+- - static bool FilterPoints(pointList) => pointList.Where(p => IsPointLegal(p))
+
 
 
 
