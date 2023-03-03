@@ -22,32 +22,47 @@ namespace sakk
     public partial class MainWindow : Window
     {
         Point a = new Point(1, 1);
+        List<ChessPiece> board = new List<ChessPiece>();
+        
         public MainWindow()
         {
-            
-            
+            board.Add(new TestPiece());
+
+
             InitializeComponent();
+            setStartingPosition();
+        }
+
+        private void setStartingPosition()
+        {
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 8; j++)
                 {
                     Button button = new Button();
                     button.Click += Button_Click;
-                    if ((i + j) % 2 == 0)
-                    {
-                        button.Background = Brushes.Black;
-                    }
-                    else
-                    {
-                        button.Background = Brushes.White;
-                    }
+                    
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
+                    button.Name = "button" + i + j;
                     chessBoard.Children.Add(button);
                 }
             }
+            displayPieces();
         }
-        
+
+        private void displayPieces()
+        {
+            foreach (ChessPiece piece in board)
+            {
+                Button button = (Button)chessBoard.Children[piece.currentPosition.x * 8 + piece.currentPosition.y];
+
+                Image image = new Image();
+                image.Source = new ImageSourceConverter().ConvertFromString(piece.imageSource) as ImageSource;
+                button.Content = image;
+            }
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Point p = new Point(Grid.GetRow((Button)sender), Grid.GetColumn((Button)sender));
