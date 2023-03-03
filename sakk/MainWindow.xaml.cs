@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,63 +21,39 @@ namespace sakk
     /// </summary>
     public partial class MainWindow : Window
     {
-        public string this[int x,int y]
-        {
-            get
-            {
-                return "lol";
-            }
-        }
-
-        System.Range operator ..(Point start, Point end = ^0)
-        {
-
-        };
+        Point a = new Point(1, 1);
         public MainWindow()
         {
+            
+            
             InitializeComponent();
-            MessageBox.Show($"{this[1, 1]}");
-            MessageBox.Show($"{this[""]}");
-            var c = new List<gyumolcs>() { new alma(), new banan() };
-            c.ForEach(v => {
-                v.erik();
-                v.Rohad();
-            });
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    Button button = new Button();
+                    button.Click += Button_Click;
+                    if ((i + j) % 2 == 0)
+                    {
+                        button.Background = Brushes.Black;
+                    }
+                    else
+                    {
+                        button.Background = Brushes.White;
+                    }
+                    Grid.SetRow(button, i);
+                    Grid.SetColumn(button, j);
+                    chessBoard.Children.Add(button);
+                }
+            }
+        }
+        
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Point p = new Point(Grid.GetRow((Button)sender), Grid.GetColumn((Button)sender));
+            
+            return;
         }
     }
-
-
-    public abstract class gyumolcs
-    {
-        public abstract void erik();
-
-        public virtual void Rohad()
-        {
-            MessageBox.Show("Rohad");
-        }
-
-
-    }
-
-    class alma : gyumolcs
-    {
-        public override void erik()
-        {
-            MessageBox.Show("Piros alma");
-        }
-
-        public override void Rohad()
-        {
-            MessageBox.Show("Barna lett az alma...");
-        }
-
-    }
-
-    class banan : gyumolcs
-    {
-        public override void erik()
-        {
-            MessageBox.Show("Sárga banán");
-        }
-    }
+    
 }
