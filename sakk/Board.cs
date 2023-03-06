@@ -51,6 +51,21 @@ namespace sakk
                 this[new Point(x, y)] = value;
             }
         }
+
+        public List<ChessPiece>.Enumerator GetEnumerator()
+        {
+            return Pieces.GetEnumerator();
+        }
+
+        public Board()
+        {
+
+        }
+
+        public Board(List<ChessPiece> startingPosition)
+        {
+            Pieces = startingPosition;
+        }
     }
 
     //- class Board

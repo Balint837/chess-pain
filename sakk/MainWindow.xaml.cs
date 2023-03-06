@@ -52,6 +52,7 @@ namespace sakk
 
         private void displayPieces()
         {
+            new List<Board>().GetEnumerator();
             foreach (ChessPiece piece in board)
             {
                 Button button = (Button)chessBoard.Children[piece.CurrentPosition.x * 8 + piece.CurrentPosition.y];
