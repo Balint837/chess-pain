@@ -21,14 +21,12 @@ namespace sakk
     /// </summary>
     public partial class MainWindow : Window
     {
+        public Board board = new();
+
         Point a = new Point(1, 1);
-        List<ChessPiece> board = new List<ChessPiece>();
         
         public MainWindow()
         {
-            board.Add(new TestPiece());
-
-
             InitializeComponent();
             setStartingPosition();
         }
@@ -46,6 +44,7 @@ namespace sakk
                     Grid.SetColumn(button, j);
                     button.Name = "button" + i + j;
                     chessBoard.Children.Add(button);
+                    Grid tempGrid = new();
                 }
             }
             displayPieces();
@@ -55,11 +54,11 @@ namespace sakk
         {
             foreach (ChessPiece piece in board)
             {
-                Button button = (Button)chessBoard.Children[piece.currentPosition.x * 8 + piece.currentPosition.y];
+                Button button = (Button)chessBoard.Children[piece.CurrentPosition.x * 8 + piece.CurrentPosition.y];
 
-                Image image = new Image();
-                image.Source = new ImageSourceConverter().ConvertFromString(piece.imageSource) as ImageSource;
-                button.Content = image;
+                //Image image = new Image();
+                //image.Source = new ImageSourceConverter().ConvertFromString(piece.imageSource) as ImageSource;
+                //button.Content = image;
             }
         }
 
@@ -68,6 +67,13 @@ namespace sakk
             Point p = new Point(Grid.GetRow((Button)sender), Grid.GetColumn((Button)sender));
             
             return;
+        }
+
+        private UIElement GetPieceByGridIdx(int row, int column)
+        {
+            return chessBoard.Children
+            .Cast<UIElement>()
+            .First(e => Grid.GetRow(e) == row && Grid.GetColumn(e) == column);
         }
     }
     

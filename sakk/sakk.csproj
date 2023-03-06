@@ -8,6 +8,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\bb.png" />
+    <None Remove="images\bk.png" />
+    <None Remove="images\bn.png" />
+    <None Remove="images\bp.png" />
+    <None Remove="images\bq.png" />
+    <None Remove="images\br.png" />
+    <None Remove="images\wb.png" />
+    <None Remove="images\wk.png" />
+    <None Remove="images\wn.png" />
+    <None Remove="images\wp.png" />
+    <None Remove="images\wq.png" />
+    <None Remove="images\wr.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\bb.png" />
+    <Resource Include="images\bk.png" />
+    <Resource Include="images\bn.png" />
+    <Resource Include="images\bp.png" />
+    <Resource Include="images\bq.png" />
+    <Resource Include="images\br.png" />
+    <Resource Include="images\wb.png" />
+    <Resource Include="images\wk.png" />
+    <Resource Include="images\wn.png" />
+    <Resource Include="images\wp.png" />
+    <Resource Include="images\wq.png" />
+    <Resource Include="images\wr.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="images\b_bishop_png_512px.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

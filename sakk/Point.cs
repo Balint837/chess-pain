@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace sakk
 {
-    internal class Point {
+    public class Point {
         public int x { get; set; }
         public int y { get; set; }
 
@@ -26,11 +26,16 @@ namespace sakk
         }
         public static bool operator ==(Point a, Point b)
         {
-            return a.x == b.x && a.y == b.y;
+            return a.Equals(b);
         }
         public static bool operator !=(Point a, Point b)
         {
-            return a.x != b.x || a.y != b.y;
+            return !a.Equals(b);
+        }
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || obj.GetType() != typeof(Point)) return false;
+            return this.x == this.x && this.y == this.y;
         }
 
     }
