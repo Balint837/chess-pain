@@ -35,7 +35,8 @@ namespace sakk
         public override bool Equals(object? obj)
         {
             if (obj == null || obj.GetType() != typeof(Point)) return false;
-            return this.x == this.x && this.y == this.y;
+            Point p = (Point)obj;
+            return this.x == p.x && this.y == p.y;
         }
 
     }

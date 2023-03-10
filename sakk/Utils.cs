@@ -38,5 +38,14 @@ namespace sakk
             }
             return result;
         }
+
+        public static List<Point> FilterPoints(List<Point> pointsList)
+        {
+            return pointsList.Where(x => IsPointLegal(x)).ToList();
+        }
+        public static bool IsPointLegal(Point p)
+        {
+            return p.x > -1 && p.x < 8 && p.y > -1 && p.y < 8;
+        }
     }
 }

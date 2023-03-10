@@ -59,6 +59,7 @@ namespace sakk
 
         public Board()
         {
+            SetDefaultChessPosition();
 
         }
 
@@ -66,6 +67,37 @@ namespace sakk
         {
             Pieces = startingPosition;
         }
+
+        public void SetDefaultChessPosition()
+        {
+
+            Pieces.Clear();
+            for (int i = 0; i < 8; i++)
+            {
+                Pieces.Add(new Pawn(new Point(i, 6), true));
+                Pieces.Add(new Pawn(new Point(i, 1), false));
+            }
+            Pieces.Add(new Rook(new Point(7, 7), true));
+            Pieces.Add(new Rook(new Point(0, 7), true));
+            Pieces.Add(new Rook(new Point(7, 0), false));
+            Pieces.Add(new Rook(new Point(0, 0), false));
+            Pieces.Add(new Knight(new Point(6, 7), true));
+            Pieces.Add(new Knight(new Point(1, 7), true));
+            Pieces.Add(new Knight(new Point(6, 0), false));
+            Pieces.Add(new Knight(new Point(1, 0), false));
+            Pieces.Add(new Bishop(new Point(5, 7), true));
+            Pieces.Add(new Bishop(new Point(2, 7), true));
+            Pieces.Add(new Bishop(new Point(5, 0), false));
+            Pieces.Add(new Bishop(new Point(2, 0), false));
+            Pieces.Add(new King(new Point(4, 7), true));
+            Pieces.Add(new King(new Point(4, 0), false));
+            Pieces.Add(new Queen(new Point(3, 7), true));
+            Pieces.Add(new Queen(new Point(3, 0), false));
+
+
+
+        }
+            
     }
 
     //- class Board

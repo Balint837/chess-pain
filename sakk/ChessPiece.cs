@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace sakk
     {
         public Point? CurrentPosition { get; set; }
         public bool IsWhite { get; set; } = true;
-
+        public abstract List<Point> GetPossibleMoves();
         private static BitmapImage[] bitmapImages = new BitmapImage[]
         {
             new BitmapImage(new Uri("pack://application:,,,/images/br.png")),
@@ -39,7 +40,6 @@ namespace sakk
                 return bitmapImages[imageIdx + (IsWhite ? 6 : 0)];
             }
         }
-
         public abstract int imageIdx { get; set; }
 
     }
