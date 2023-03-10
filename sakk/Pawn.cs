@@ -15,7 +15,7 @@ namespace sakk
             this.IsWhite = isWhite;
         }
         public bool IsFirstMove { get; set; } = true;
-
+        public bool mayBePassanted { get; set; } = false;
         public override int imageIdx { get; set; } = 5;
 
         public override List<Point> GetPossibleMoves()
@@ -40,8 +40,26 @@ namespace sakk
                 }
             }
             
+            
+            
             return Utils.FilterPoints(result);
         }
+        //public override List<Point> GetPossibleMoves(Board board)
+        //{
 
+        //    {
+        //        List<Point> result = new List<Point>();
+        //        result = GetPossibleMoves();
+        //        if (IsWhite)
+        //        {
+        //            if (board[CurrentPosition.x + 1, CurrentPosition.y] != null && board[CurrentPosition.x + 1, CurrentPosition.y].GetType == "Pawn")
+        //            {
+        //            }
+
+        //        }
+
+        //        return Utils.FilterPoints(result);
+        //    }
+        //}
     }
 }
