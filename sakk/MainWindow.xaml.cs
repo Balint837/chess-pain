@@ -25,15 +25,14 @@ namespace sakk
         
         public Board board = new();
 
-        Point a = new Point(1, 1);
-        
+        public bool IsWhiteTurn = true;
+
         public MainWindow()
         {
             InitializeComponent();
             setStartingPosition();
         }
-
-        private void setStartingPosition()
+         private void setStartingPosition()
         {
             for (int i = 0; i < 8; i++)
             {
@@ -87,21 +86,62 @@ namespace sakk
                 img.Source = piece.ImageByIdx;
                 buttonGrid.Children.Add(img);
 
+
             }
+        }
+
+        private void MovePiece(Point from, Point to) {
+            IsWhiteTurn = !IsWhiteTurn;
+            board[to] = board[from];
+            if (board[to].GetType() == typeof(Pawn)) {
+                ((Pawn)board[to]).IsFirstMove = false;
+            }
+            else if (board[to].GetType() == typeof(King)) { 
+                               ((King)board[to]).IsFirstMove = false;
+                       }
+            else if (board[to].GetType() == typeof(Rook)) {
+                               ((Rook)board[to]).IsFirstMove = false;
+                       }
+            board.LegalMoves.Clear();
+            Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
+            Grid buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            button = (Button)chessBoard.Children[to.y * 8 + to.x];
+            buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            Image img = new Image();
+            
+            img.Source = board[to].ImageByIdx;
+            board.selectedPiece = null;
+            buttonGrid.Children.Add(img);
+
+        
+                resetBoardColor();
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender) );
-            if (board[p]!=null)
+            if (board[p]!=null && board[p].IsWhite == IsWhiteTurn)
             {
+                board.LegalMoves.Clear();
+                board.selectedPiece = board[p];
+
                 resetBoardColor();
-                foreach (Point pa in board[p].GetPossibleMoves())
+                foreach (Point pa in board[p].GetMovesFinal(board))
                 {
-                    
+                    board.LegalMoves.Add(pa);
+
                     Button button = (Button)chessBoard.Children[pa.y * 8 + pa.x];
                     button.Background = Brushes.Black;
                 }
+            }
+            else if(board.LegalMoves.Exists(x => x == p))
+            {
+
+                MovePiece(board.selectedPiece.CurrentPosition, p);
+
             }
             return;
         }

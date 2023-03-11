@@ -15,8 +15,9 @@ namespace sakk
         }
 
         public override int imageIdx { get; set; } = 4;
+        public bool IsFirstMove { get; set; } = true;
 
-        public override List<Point> GetPossibleMoves()
+        public override List<Point> GetMovesAll()
         {
             List<Point> result = new List<Point>();
             for (int i = -1; i < 2; i++)

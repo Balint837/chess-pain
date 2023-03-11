@@ -18,7 +18,7 @@ namespace sakk
         public bool mayBePassanted { get; set; } = false;
         public override int imageIdx { get; set; } = 5;
 
-        public override List<Point> GetPossibleMoves()
+        public override List<Point> GetMovesAll()
         {
             List<Point> result = new List<Point>();
             if (IsWhite)

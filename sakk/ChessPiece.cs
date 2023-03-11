@@ -14,10 +14,24 @@ namespace sakk
     {
         public Point? CurrentPosition { get; set; }
         public bool IsWhite { get; set; } = true;
-        public abstract List<Point> GetPossibleMoves();
-        public virtual List<Point> GetPossibleMoves(Board board)
+        public abstract List<Point> GetMovesAll();
+        
+        public virtual List<Point> GetMovesAll(Board board)
         {
-            return GetPossibleMoves();
+            return GetMovesAll();
+        }
+        public virtual List<Point> GetMovesAvailable(Board board)
+        {
+         
+            return GetMovesAll(board);
+        }
+        public virtual List<Point> GetMovesPinned(Board board)
+        {
+            return GetMovesAvailable(board);
+        }
+        public virtual List<Point> GetMovesFinal(Board board)
+        {
+            return GetMovesPinned(board);
         }
         private static BitmapImage[] bitmapImages = new BitmapImage[]
         {

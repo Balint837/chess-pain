@@ -17,7 +17,7 @@ namespace sakk
 
         public override int imageIdx { get; set; } = 2;
 
-        public override List<Point> GetPossibleMoves()
+        public override List<Point> GetMovesAll()
         {
             List<Point> result = new List<Point>();
             for (int i = 1; i < 8; i++)
