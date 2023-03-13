@@ -24,12 +24,15 @@ namespace sakk
     {
         List<ChessPiece> pieces = new();
         
-        public Board board = new();
+        public static Board board = new();
 
         public bool IsWhiteTurn = true;
 
+        public static MainWindow _instance;
+
         public MainWindow()
         {
+            _instance = this;
             InitializeComponent();
             setStartingPosition(); 
             
@@ -96,17 +99,33 @@ namespace sakk
         }
 
         private void MovePiece(Point from, Point to) {
-            IsWhiteTurn = !IsWhiteTurn;
             board[to] = board[from];
-            if (board[to].GetType() == typeof(Pawn)) {
-                ((Pawn)board[to]).IsFirstMove = false;
+            if (board[to] is Pawn) {
+                var tempPiece = (Pawn)board[to];
+                if (tempPiece.IsFirstMove)
+                {
+                    tempPiece.mayBePassanted = tempPiece.CurrentPosition.y == (tempPiece.IsWhite ? 4 : 3);
+                    tempPiece.IsFirstMove = false;
+                }
+                var checkPassantablePiece = board[new Point(to.x, to.y + (tempPiece.IsWhite ? 1 : -1))];
+                if (checkPassantablePiece is Pawn && ((Pawn)checkPassantablePiece).mayBePassanted)
+                {
+                    board.Remove(checkPassantablePiece);
+                }
             }
-            else if (board[to].GetType() == typeof(King)) { 
+            else if (board[to] is King) { 
                                ((King)board[to]).IsFirstMove = false;
                        }
-            else if (board[to].GetType() == typeof(Rook)) {
+            else if (board[to] is Rook) {
                                ((Rook)board[to]).IsFirstMove = false;
                        }
+            foreach (ChessPiece piece in board)
+            {
+                if (piece.IsWhite != IsWhiteTurn && piece is Pawn)
+                {
+                    ((Pawn)piece).mayBePassanted = false;
+                }
+            }
             board.LegalMoves.Clear();
             Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
             Grid buttonGrid = button.Content as Grid;
@@ -120,21 +139,22 @@ namespace sakk
             board.selectedPiece = null;
             buttonGrid.Children.Add(img);
 
-        
-                resetBoardColor();
+
+            IsWhiteTurn = !IsWhiteTurn;
+            resetBoardColor();
 
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender) );
-            if (board[p]!=null && board[p].IsWhite == IsWhiteTurn)
+            if (board[p]!=null && board[p]!.IsWhite == IsWhiteTurn)
             {
                 board.LegalMoves.Clear();
-                board.selectedPiece = board[p];
+                board.selectedPiece = board[p]!;
 
                 resetBoardColor();
-                foreach (Point pa in board[p].GetMovesFinal(board))
+                foreach (Point pa in board.selectedPiece.GetMovesFinal(board))
                 {
                     board.LegalMoves.Add(pa);
                     Grid buttonGrid =((Button)chessBoard.Children[pa.y * 8 + pa.x]).Content as Grid;
@@ -160,13 +180,13 @@ namespace sakk
             else if(board.LegalMoves.Exists(x => x == p))
             {
 
-                MovePiece(board.selectedPiece.CurrentPosition, p);
+                MovePiece(board.selectedPiece.CurrentPosition!, p);
 
             }
             return;
         }
 
-        private UIElement GetPieceByGridIdx(int row, int column)
+        public UIElement GetPieceByGridIdx(int row, int column)
         {
             return chessBoard.Children
             .Cast<UIElement>()
