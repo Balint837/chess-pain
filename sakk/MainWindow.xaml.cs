@@ -47,6 +47,7 @@ namespace sakk
                 for (int j = 0; j < 8; j++)
                 {
                     Button button = new Button();
+                    button.Padding = new Thickness(7);
                     button.Click += Button_Click;
                     button.BorderThickness = new Thickness(0);
                     Grid.SetRow(button, i);
@@ -54,6 +55,8 @@ namespace sakk
                     button.Name = "button" + i + j;
                     chessBoard.Children.Add(button);
                     Grid tempGrid = new();
+
+                    
                     button.Content = tempGrid;
                 }
             }
@@ -81,10 +84,29 @@ namespace sakk
             }
 
         }
+        private void removeRemovables() {
+            foreach (UIElement element in chessBoard.Children)
+            {
+                if (element is Button)
+                {
+                    Grid buttonGrid = ((Button)element).Content as Grid;
+                    foreach (UIElement el in buttonGrid.Children)
+                    {
+                        if (el is Ellipse && (string)((Ellipse)el).Tag == "removable")
+                        {
+                            buttonGrid.Children.Remove(el);
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+        }
 
         private void displayPieces()
         {
-            new List<Board>().GetEnumerator();
+            
             foreach (ChessPiece piece in board)
             {
                 Button button = (Button)chessBoard.Children[piece.CurrentPosition.y * 8 + piece.CurrentPosition.x];
@@ -147,6 +169,7 @@ namespace sakk
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            removeRemovables();
             Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender) );
             if (board[p]!=null && board[p]!.IsWhite == IsWhiteTurn)
             {
@@ -160,8 +183,10 @@ namespace sakk
                     Grid buttonGrid =((Button)chessBoard.Children[pa.y * 8 + pa.x]).Content as Grid;
                     Ellipse elipse = new();
                     elipse.Stretch = Stretch.UniformToFill;
+                    
+                    elipse.Opacity = 0.7;
                     elipse.Tag = "removable";
-                    if (buttonGrid.Children.Count > 0)
+                    if (buttonGrid.Children.Count > 0 || (board.selectedPiece is Pawn && board.selectedPiece.CurrentPosition.x != pa.x))
                     {
                         elipse.Stroke = Brushes.Gray;
                         elipse.StrokeThickness = 7;
@@ -169,10 +194,12 @@ namespace sakk
 
 
                     }
+                    
                     else
                     {
                         elipse.Fill = Brushes.Gray;
-                        
+                        elipse.Width = 33;
+                        elipse.Height = 33;
                     }
                     buttonGrid.Children.Add(elipse);
                 }

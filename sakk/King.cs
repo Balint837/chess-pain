@@ -26,6 +26,7 @@ namespace sakk
                 {
                     if (i != 0 || j != 0)
                     {
+                            
                         result.Add(new Point(CurrentPosition.x + i, CurrentPosition.y + j));
                     }
                     
