@@ -84,6 +84,52 @@ namespace sakk
 
             return Utils.FilterPoints(result);
         }
+
+        public override List<Point> GetMovesAvailable(Board board)
+        {
+            List<Point> result = new List<Point>();
+            int multiplier = IsWhite ? -1 : 1;
+            Point checkPoint = new Point(CurrentPosition.x, CurrentPosition.y + 1 * multiplier);
+            if (board[checkPoint] == null)
+            {
+                result.Add(checkPoint);
+            }
+            checkPoint = new Point(CurrentPosition.x, CurrentPosition.y + 2 * multiplier);
+            if (IsFirstMove && board[checkPoint] == null)
+            {
+                result.Add(checkPoint);
+            }
+
+            var tempPiece = MainWindow.board[new Point(CurrentPosition.x - 1, CurrentPosition.y + 1 * multiplier)];
+            if (tempPiece != null && tempPiece.IsWhite != IsWhite)
+            {
+                result.Add(new Point(CurrentPosition.x - 1, CurrentPosition.y + 1 * multiplier));
+            }
+
+            tempPiece = MainWindow.board[new Point(CurrentPosition.x + 1, CurrentPosition.y + 1 * multiplier)];
+            if (tempPiece != null && tempPiece.IsWhite != IsWhite)
+            {
+                result.Add(new Point(CurrentPosition.x + 1, CurrentPosition.y + 1 * multiplier));
+            }
+            
+            checkPoint = new Point(CurrentPosition.x + 1, CurrentPosition.y);
+            tempPiece = MainWindow.board[checkPoint];
+            if (tempPiece is Pawn && ((Pawn)tempPiece).mayBePassanted && tempPiece.IsWhite != IsWhite)
+            {
+                checkPoint.y += multiplier;
+                result.Add(checkPoint);
+            }
+
+            checkPoint = new Point(CurrentPosition.x - 1, CurrentPosition.y);
+            tempPiece = MainWindow.board[checkPoint];
+            if (tempPiece is Pawn && ((Pawn)tempPiece).mayBePassanted && tempPiece.IsWhite != IsWhite)
+            {
+                checkPoint.y += multiplier;
+                result.Add(checkPoint);
+            }
+
+            return Utils.FilterPoints(result);
+        }
         //public override List<Point> GetPossibleMoves(Board board)
         //{
 

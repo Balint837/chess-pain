@@ -34,5 +34,67 @@ namespace sakk
         }
 
 
+
+        public override List<Point> GetMovesAvailable(Board board)
+        {
+            List<Point> result = new List<Point>();
+            int iter = CurrentPosition.y + 1;
+            while (board[new Point(CurrentPosition.x, iter)] == null && iter < 8)
+            {
+                result.Add(new Point(CurrentPosition.x, iter));
+                iter++;
+            }
+            var lastPiece = board[new Point(CurrentPosition.x, iter)];
+
+            if (lastPiece != null && lastPiece.IsWhite != IsWhite)
+            {
+                result.Add(new Point(CurrentPosition.x, iter));
+            }
+
+            iter = CurrentPosition.y - 1;
+            while (board[new Point(CurrentPosition.x, iter)] == null && iter > -1)
+            {
+                result.Add(new Point(CurrentPosition.x, iter));
+                iter--;
+            }
+            lastPiece = board[new Point(CurrentPosition.x, iter)];
+
+            if (lastPiece != null && lastPiece.IsWhite != IsWhite)
+            {
+                result.Add(new Point(CurrentPosition.x, iter));
+            }
+
+
+
+            iter = CurrentPosition.x + 1;
+            while (board[new Point(iter, CurrentPosition.y)] == null && iter < 8)
+            {
+                result.Add(new Point(iter, CurrentPosition.y));
+                iter++;
+            }
+            lastPiece = board[new Point(iter, CurrentPosition.y)];
+
+            if (lastPiece != null && lastPiece.IsWhite != IsWhite)
+            {
+                result.Add(new Point(iter, CurrentPosition.y));
+            }
+
+
+
+            iter = CurrentPosition.x - 1;
+            while (board[new Point(iter, CurrentPosition.y)] == null && iter > -1)
+            {
+                result.Add(new Point(iter, CurrentPosition.y));
+                iter--;
+            }
+            lastPiece = board[new Point(iter, CurrentPosition.y)];
+
+            if (lastPiece != null && lastPiece.IsWhite != IsWhite)
+            {
+                result.Add(new Point(iter, CurrentPosition.y));
+            }
+
+            return Utils.FilterPoints(result);
+        }
     }
 }
