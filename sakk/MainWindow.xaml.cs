@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -30,9 +31,13 @@ namespace sakk
         public MainWindow()
         {
             InitializeComponent();
-            setStartingPosition();
+            setStartingPosition(); 
+            
+
+
+
         }
-         private void setStartingPosition()
+        private void setStartingPosition()
         {
             for (int i = 0; i < 8; i++)
             {
@@ -132,9 +137,24 @@ namespace sakk
                 foreach (Point pa in board[p].GetMovesFinal(board))
                 {
                     board.LegalMoves.Add(pa);
+                    Grid buttonGrid =((Button)chessBoard.Children[pa.y * 8 + pa.x]).Content as Grid;
+                    Ellipse elipse = new();
+                    elipse.Stretch = Stretch.UniformToFill;
+                    elipse.Tag = "removable";
+                    if (buttonGrid.Children.Count > 0)
+                    {
+                        elipse.Stroke = Brushes.Gray;
+                        elipse.StrokeThickness = 7;
+                        Panel.SetZIndex(elipse, -1);
 
-                    Button button = (Button)chessBoard.Children[pa.y * 8 + pa.x];
-                    button.Background = Brushes.Black;
+
+                    }
+                    else
+                    {
+                        elipse.Fill = Brushes.Gray;
+                        
+                    }
+                    buttonGrid.Children.Add(elipse);
                 }
             }
             else if(board.LegalMoves.Exists(x => x == p))
