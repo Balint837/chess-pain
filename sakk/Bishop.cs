@@ -39,58 +39,60 @@ namespace sakk
             int maxIter = CurrentPosition.x > CurrentPosition.y ? 8-CurrentPosition.x : 8-CurrentPosition.y;
             while (board[new Point(CurrentPosition.x + iter, CurrentPosition.y + iter)] == null && iter < maxIter)
             {
-                result.Add(new Point(CurrentPosition.x, iter));
+                result.Add(new Point(CurrentPosition.x + iter, CurrentPosition.y + iter));
                 iter++;
             }
             var lastPiece = board[new Point(CurrentPosition.x + iter, CurrentPosition.y + iter)];
 
             if (lastPiece != null && lastPiece.IsWhite != IsWhite)
             {
-                result.Add(new Point(CurrentPosition.x, iter));
+                result.Add(new Point(CurrentPosition.x + iter, CurrentPosition.y + iter));
             }
+
 
             iter = 1;
-            maxIter = CurrentPosition.x > CurrentPosition.y ? CurrentPosition.y+1 : CurrentPosition.x+1;
-            while (board[new Point(CurrentPosition.x + iter, CurrentPosition.y + iter)] == null && iter < maxIter)
+            maxIter = CurrentPosition.x > CurrentPosition.y ? CurrentPosition.y + 1 : CurrentPosition.x + 1;
+            while (board[new Point(CurrentPosition.x - iter, CurrentPosition.y - iter)] == null && iter < maxIter)
             {
-                result.Add(new Point(CurrentPosition.x, iter));
+                result.Add(new Point(CurrentPosition.x - iter, CurrentPosition.y - iter));
                 iter++;
             }
-            lastPiece = board[new Point(CurrentPosition.x + iter, CurrentPosition.y + iter)];
+            lastPiece = board[new Point(CurrentPosition.x - iter, CurrentPosition.y - iter)];
 
             if (lastPiece != null && lastPiece.IsWhite != IsWhite)
             {
-                result.Add(new Point(CurrentPosition.x, iter));
+                result.Add(new Point(CurrentPosition.x - iter, CurrentPosition.y - iter));
             }
 
 
 
-            iter = CurrentPosition.x + 1;
-            while (board[new Point(iter, CurrentPosition.y)] == null && iter < 8)
+            iter = 1;
+            maxIter = CurrentPosition.x+1 > 8-CurrentPosition.y ? 8-CurrentPosition.y : CurrentPosition.x+1;
+            while (board[new Point(CurrentPosition.x - iter, CurrentPosition.y + iter)] == null && iter < maxIter)
             {
-                result.Add(new Point(iter, CurrentPosition.y));
+                result.Add(new Point(CurrentPosition.x - iter, CurrentPosition.y + iter));
                 iter++;
             }
-            lastPiece = board[new Point(iter, CurrentPosition.y)];
+            lastPiece = board[new Point(CurrentPosition.x - iter, CurrentPosition.y + iter)];
 
             if (lastPiece != null && lastPiece.IsWhite != IsWhite)
             {
-                result.Add(new Point(iter, CurrentPosition.y));
+                result.Add(new Point(CurrentPosition.x - iter, CurrentPosition.y + iter));
             }
 
 
-
-            iter = CurrentPosition.x - 1;
-            while (board[new Point(iter, CurrentPosition.y)] == null && iter > -1)
+            iter = 1;
+            maxIter = 8 - CurrentPosition.x > CurrentPosition.y + 1 ? CurrentPosition.y + 1 : 8 - CurrentPosition.x;
+            while (board[new Point(CurrentPosition.x + iter, CurrentPosition.y - iter)] == null && iter < maxIter)
             {
-                result.Add(new Point(iter, CurrentPosition.y));
-                iter--;
+                result.Add(new Point(CurrentPosition.x + iter, CurrentPosition.y - iter));
+                iter++;
             }
-            lastPiece = board[new Point(iter, CurrentPosition.y)];
+            lastPiece = board[new Point(CurrentPosition.x + iter, CurrentPosition.y - iter)];
 
             if (lastPiece != null && lastPiece.IsWhite != IsWhite)
             {
-                result.Add(new Point(iter, CurrentPosition.y));
+                result.Add(new Point(CurrentPosition.x + iter, CurrentPosition.y - iter));
             }
 
             return Utils.FilterPoints(result);

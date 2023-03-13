@@ -17,6 +17,132 @@ namespace sakk
         public List<Point> LegalMoves = new List<Point>();
         public ChessPiece selectedPiece;
 
+        public static List<Point> QueenEndpoints(Point p)
+        {
+            
+        }
+        public static List<Point> KnightMoves(Point p, bool? isWhite = null)
+        {
+            var _this = MainWindow.board;
+            List<Point> result = new List<Point>
+            {
+                new Point(p.x + 1, p.y + 2),
+                new Point(p.x + 1, p.y - 2),
+                new Point(p.x - 1, p.y + 2),
+                new Point(p.x - 1, p.y - 2),
+                new Point(p.x + 2, p.y + 1),
+                new Point(p.x + 2, p.y - 1),
+                new Point(p.x - 2, p.y + 1),
+                new Point(p.x - 2, p.y - 1)
+            };
+            if (isWhite != null)
+            {
+                result = result.Where(x => _this[x] == null || (_this[x]!.IsWhite != isWhite)).ToList();
+            }
+            else if (_this[p] != null)
+            {
+                result = result.Where(x => _this[x] == null || (_this[x]!.IsWhite != _this[p]!.IsWhite)).ToList();
+            }
+            return Utils.FilterPoints(result);
+        }
+
+        public static List<Point> DrawSection(Point p1, Point p2, bool forceInclusiveEnd = false, bool forceInclusiveStart = false, bool allowInvalid = false, bool? isWhite = null)
+        {
+            var _this = MainWindow.board;
+            List<Point> result = new();
+
+            int xp = p1.x == p2.x ? 0 : (p1.x < p2.x ? 1 : -1);
+            int yp = p1.y == p2.y ? 0 : (p1.y < p2.y ? 1 : -1);
+
+
+            if ((xp == 0 && yp == 0) || (xp != 0 && yp != 0 && Math.Abs(p1.x - p2.x) != Math.Abs(p1.y - p2.y)))
+            {
+                return allowInvalid ? InvalidQueryResult() : result;
+            }
+            
+            int x = p1.x;
+            int y = p1.y;
+
+            if (forceInclusiveStart || _this[x,y] == null)
+            {
+                result.Add(new Point(x, y));
+            }
+            x += xp;
+            y += yp;
+
+            while (p2.x != x)
+            {
+                result.Add(new Point(x, y));
+                x += xp;
+                y += yp;
+            }
+
+            if (forceInclusiveEnd || _this[p2] == null || (_this[p2] != null && _this[p1] != null && (isWhite == null ? (_this[p1]!.IsWhite != _this[p2]!.IsWhite) : (bool)isWhite)))
+            {
+                result.Add(new Point(x, y));
+            }
+
+            return Utils.FilterPoints(result);
+        }
+
+        public static List<Point> DrawLane(Point p1, Point p2, bool allowInvalid = true)
+        {
+            List<Point> result = new();
+
+            int xp = p1.x == p2.x ? 0 : (p1.x < p2.x ? 1 : -1);
+            int yp = p1.y == p2.y ? 0 : (p1.y < p2.y ? 1 : -1);
+
+
+            if ((xp == 0 && yp == 0) || (xp != 0 && yp != 0 && Math.Abs(p1.x - p2.x) != Math.Abs(p1.y - p2.y)))
+            {
+                return allowInvalid ? InvalidQueryResult() : result;
+            }
+
+            int x = p1.x;
+            int y = p1.y;
+
+            //troll code xd (same result as actual code, less readable)
+            //
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    while (x > 0 && x < 7 && y > 0 && y < 7)
+            //    {
+            //        x += xp * (2*i - 1);
+            //        y += yp * (2*i - 1);
+            //    }
+            //}
+            
+
+            while (x > 0 && x < 7 && y > 0 && y < 7)
+            {
+                x -= xp;
+                y -= yp;
+            }
+
+            while (x > 0 && x < 7 && y > 0 && y < 7)
+            {
+                result.Add(new Point(x, y));
+                x += xp;
+                y += yp;
+            }
+
+
+            return Utils.FilterPoints(result);
+        }
+
+        public static List<Point> InvalidQueryResult()
+        {
+            List<Point> result = new();
+            for (int i = 0; i < 8; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    result.Add(new Point(i, j));
+                }
+            }
+            return result;
+        }
+
         public bool Remove(Point p)
         {
             return Remove(this[p]!);
