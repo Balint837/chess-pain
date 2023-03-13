@@ -28,7 +28,19 @@ namespace sakk
                 {
                     result.Add(new Point(CurrentPosition.x, CurrentPosition.y - 2));
                 }
-                
+
+                var checkPiece = MainWindow.board[new Point(CurrentPosition.x - 1, CurrentPosition.y - 1)];
+                if (checkPiece != null && !checkPiece.IsWhite)
+                {
+                    result.Add(new Point(CurrentPosition.x - 1, CurrentPosition.y - 1));
+                }
+
+                checkPiece = MainWindow.board[new Point(CurrentPosition.x + 1, CurrentPosition.y - 1)];
+                if (checkPiece != null && !checkPiece.IsWhite)
+                {
+                    result.Add(new Point(CurrentPosition.x + 1, CurrentPosition.y - 1));
+                }
+
             }
             else
             {
@@ -38,10 +50,38 @@ namespace sakk
                     result.Add(new Point(CurrentPosition.x, CurrentPosition.y + 2));
 
                 }
+
+
+                var checkPiece = MainWindow.board[new Point(CurrentPosition.x - 1, CurrentPosition.y + 1)];
+                if (checkPiece != null && checkPiece.IsWhite)
+                {
+                    result.Add(new Point(CurrentPosition.x - 1, CurrentPosition.y + 1));
+                }
+
+                checkPiece = MainWindow.board[new Point(CurrentPosition.x + 1, CurrentPosition.y + 1)];
+                if (checkPiece != null && checkPiece.IsWhite)
+                {
+                    result.Add(new Point(CurrentPosition.x + 1, CurrentPosition.y + 1));
+                }
             }
-            
-            
-            
+            var currentPoint = new Point(CurrentPosition.x + 1, CurrentPosition.y);
+            var tempPiece = MainWindow.board[currentPoint];
+            if (tempPiece is Pawn && ((Pawn)tempPiece).mayBePassanted)
+            {
+                currentPoint.y += IsWhite ? -1 : 1;
+                result.Add(currentPoint);
+            }
+
+
+            currentPoint = new Point(CurrentPosition.x - 1, CurrentPosition.y);
+            tempPiece = MainWindow.board[currentPoint];
+            if (tempPiece is Pawn && ((Pawn)tempPiece).mayBePassanted)
+            {
+                currentPoint.y += IsWhite ? -1 : 1;
+                result.Add(currentPoint);
+            }
+
+
             return Utils.FilterPoints(result);
         }
         //public override List<Point> GetPossibleMoves(Board board)

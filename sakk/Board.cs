@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
 namespace sakk
@@ -14,7 +16,38 @@ namespace sakk
         List<ChessPiece> Pieces = new List<ChessPiece>();
         public List<Point> LegalMoves = new List<Point>();
         public ChessPiece selectedPiece;
-        
+
+        public bool Remove(Point p)
+        {
+            return Remove(this[p]!);
+        }
+        public bool Remove(ChessPiece p)
+        {
+            if (p == null)
+            {
+                return false;
+            }
+            try
+            {
+                Button button = (Button)MainWindow._instance.GetPieceByGridIdx(p.CurrentPosition!.y, p.CurrentPosition.x);
+                Grid buttonGrid = button.Content as Grid;
+                buttonGrid.Children.Clear();
+                Pieces.Remove(p);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public void Clear()
+        {
+            Pieces.Clear();
+            LegalMoves.Clear();
+            selectedPiece = null;
+        }
+
         public static bool IsPointLegal(Point p)
         {
             return p.x > -1 && p.x < 8 && p.y > -1 && p.y < 8;
