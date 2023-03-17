@@ -74,7 +74,7 @@ namespace sakk
         {
             return GetMovesPinned(board);
         }
-        private static BitmapImage[] bitmapImages = new BitmapImage[]
+        public static BitmapImage[] bitmapImages = new BitmapImage[]
         {
             new BitmapImage(new Uri("pack://application:,,,/images/br.png")),
             new BitmapImage(new Uri("pack://application:,,,/images/bn.png")),

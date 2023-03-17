@@ -20,17 +20,17 @@ namespace sakk
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    
     public partial class MainWindow : Window
     {
-        //Grid chessBoard = new Grid();
+        public bool gameInProgress = false;
         List<ChessPiece> pieces = new();
-        
+        Border startButtonBorder = new Border();
         public static Board board = new();
 
         public bool IsWhiteTurn = true;
 
         public static MainWindow _instance;
+        public bool TimeExpanded = false;
 
         public MainWindow()
         {
@@ -39,38 +39,46 @@ namespace sakk
 
             setStartingPosition();
 
-
+            createMenu();
 
         }
 
+        private void createMenu()
+        {
+            createStartButton();
+        }
+
+        private void createStartButton()
+        {
+            
+            startButtonBorder.Margin = new Thickness(15, 40, 15, 40);
+            startButtonBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x54, 0xB1, 0x4D));
+            startButtonBorder.BorderThickness = new Thickness(10);
+            startButtonBorder.CornerRadius = new CornerRadius(8);
+            startButtonBorder.Name = "startButtonWrapper";
+            Grid.SetRow(startButtonBorder, 1);
+
+            Button startButton = new Button();
+            startButton.Name = "startButton";
+            startButton.Content = "StartGame";
+            startButton.Style = (Style)Application.Current.Resources["NoHoverButton"];
+            startButton.Background = new SolidColorBrush(Color.FromArgb(0xFF, 0x54, 0xB1, 0x4D));
+            startButton.Foreground = new SolidColorBrush(Color.FromArgb(0xFF, 0xF1, 0xED, 0xED));
+            startButton.FontSize = 24;
+            startButton.FontFamily = new FontFamily("Arial");
+            startButton.FontWeight = FontWeights.Bold;
+            startButton.BorderBrush = null;
+            startButton.BorderThickness = new Thickness(0);
+            startButton.Click += StartGame;
+            startButton.Style = (Style)FindResource("NoHoverButton");
+            startButtonBorder.Child = startButton;
+
+            menuGrid.Children.Add(startButtonBorder);
+        }
+
+
+
         
-
-        //private void displayChessBoard()
-        //{
-
-        //    clearMainGrid();
-        //    ColumnDefinition column1 = new ColumnDefinition();
-        //    ColumnDefinition column2 = new ColumnDefinition();
-
-        //    // Set the column widths
-        //    column1.Width = new GridLength(10, GridUnitType.Star);
-        //    column2.Width = new GridLength(2, GridUnitType.Star);
-
-        //    // Add the column definitions to the Grid control
-        //    mainGrid.ColumnDefinitions.Add(column1);
-        //    mainGrid.ColumnDefinitions.Add(column2);
-
-        //    for (int i = 0; i < 8; i++)
-        //    {
-        //        chessBoard.ColumnDefinitions.Add(new ColumnDefinition());
-        //        chessBoard.RowDefinitions.Add(new RowDefinition());
-
-        //    }
-        //    chessBoard.Name = "chessBoard";
-        //    mainGrid.Children.Add(chessBoard);
-
-        //}
-
         private void setStartingPosition()
         {
             for (int i = 0; i < 8; i++)
@@ -166,6 +174,11 @@ namespace sakk
                 {
                     board.Remove(checkPassantablePiece);
                 }
+                else if (to.y== (tempPiece.IsWhite ? 0 : 7))
+                {
+                    pawnPromotion(to, tempPiece.IsWhite);
+                    gameInProgress = false;
+                }
             }
             else if (board[to] is King) { 
                                ((King)board[to]).IsFirstMove = false;
@@ -199,8 +212,107 @@ namespace sakk
 
         }
 
+        private void pawnPromotion(Point to, bool IsWhite)
+        {
+            BrushConverter bc = new();
+            Grid gr = new Grid();
+            gr.Background = (Brush)bc.ConvertFrom("#fff");
+            gr.RowDefinitions.Add(new RowDefinition());
+            gr.RowDefinitions.Add(new RowDefinition());
+            gr.RowDefinitions.Add(new RowDefinition());
+            gr.RowDefinitions.Add(new RowDefinition());
+            Image img = new Image();
+            img.Margin = new Thickness(5,10,5,10);
+            img.Source = ChessPiece.bitmapImages[3 + (IsWhite ? 6 : 0)];
+            img.Stretch = Stretch.UniformToFill;
+            
+            img.Tag = "queen";
+            img.MouseDown += promotionPiece_Click;
+            gr.Children.Add(img);
+            Grid.SetRow(img, 0);
+            img = new Image();
+            img.Margin = new Thickness(5);
+
+            img.Source = ChessPiece.bitmapImages[0 + (IsWhite ? 6 : 0)];
+            img.Stretch = Stretch.UniformToFill;
+            img.Tag = "rook";
+            img.MouseDown += promotionPiece_Click;
+            gr.Children.Add(img);
+            Grid.SetRow(img, 1);
+            img = new Image();
+            img.Margin = new Thickness(5);
+
+            img.Source = ChessPiece.bitmapImages[2 + (IsWhite ? 6 : 0)];
+            img.Stretch = Stretch.UniformToFill;
+            img.Tag = "bishop";
+            img.MouseDown += promotionPiece_Click;
+            gr.Children.Add(img);
+            Grid.SetRow(img, 2);
+            img = new Image();
+            img.Margin = new Thickness(5);
+
+            img.Source = ChessPiece.bitmapImages[1 + (IsWhite ? 6 : 0)];
+            img.Stretch = Stretch.UniformToFill;
+            img.Tag = "knight";
+            img.MouseDown += promotionPiece_Click;
+            gr.Children.Add(img);
+            Grid.SetRow(img, 3);
+            Grid.SetColumn(gr, to.x);
+            Grid.SetRow(gr, to.y - (IsWhite ? 0 : 3));
+            Grid.SetRowSpan(gr, 4);
+            chessBoard.Children.Add(gr);
+
+            
+             
+            
+
+        }
+
+        private void promotionPiece_Click(object sender, MouseButtonEventArgs e)
+        {
+            Image senderPiece = (Image)sender;
+            ChessPiece newPiece;
+            Point to = new Point(Grid.GetColumn(senderPiece.Parent as Grid), Grid.GetRow(senderPiece.Parent as Grid) + (IsWhiteTurn ? 3 : 0));
+            switch (senderPiece.Tag)
+            {
+                case "queen":
+                    newPiece = new Queen(to, !IsWhiteTurn);
+                    break;
+                case "rook":
+                    newPiece = new Rook(to, !IsWhiteTurn, false);
+                    break;
+                case "bishop":
+                    newPiece = new Bishop(to, !IsWhiteTurn);
+                    break;
+                case "knight":
+                    newPiece = new Knight(to, !IsWhiteTurn);
+                    break;
+                    default:
+                    newPiece = new Queen(to, !IsWhiteTurn);
+                    break;
+
+            }
+            board[to] = newPiece;
+            chessBoard.Children.Remove(senderPiece.Parent as Grid);
+            Button btn = (Button)chessBoard.Children[to.y * 8 + to.x];
+            Grid btnGrid = btn.Content as Grid;
+            btnGrid.Children.Clear();
+            Image img = new Image();
+            img.Source = newPiece.ImageByIdx;
+            btnGrid.Children.Add(img);
+            gameInProgress = true;
+
+
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+
+            if (!gameInProgress)
+            {
+                return;
+            }
+
             removeRemovables();
             Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender) );
             if (board[p]!=null && board[p]!.IsWhite == IsWhiteTurn)
@@ -252,15 +364,22 @@ namespace sakk
             .First(e => Grid.GetRow(e) == row && Grid.GetColumn(e) == column);
         }
 
-        public void returnToMainMenu() {
-            
+        
+
+       
+
+        private void StartGame(object sender, RoutedEventArgs e)
+        {
+            gameInProgress = true;
+            menuGrid.Children.Clear();
         }
 
-        private void StartButton_Click(object sender, RoutedEventArgs e)
+        private void displayTimeOptions(object sender, RoutedEventArgs e)
         {
 
-            //displayChessBoard();
-            setStartingPosition();
+              Grid.SetRow(startButtonBorder, (TimeExpanded ? 1:2));
+
+            TimeExpanded = !TimeExpanded;
         }
     }
     
