@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:sakk"
         mc:Ignorable="d"
-        Title="MainWindow" Height="960" Width="1040" ResizeMode="CanMinimize">
+        Title="MainWindow" Height="960" Width="1120" ResizeMode="CanMinimize">
     <Window.Resources>
         <Style x:Key="NoHoverButton" TargetType="Button">
             <Setter Property="Template">
@@ -24,7 +24,7 @@
         </Style>
 
     </Window.Resources>
-    <Grid Background="#FF262421">
+    <Grid Background="#FF312E2B">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="10*"/>
@@ -33,9 +33,9 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="chessBoard" Grid.Column="0" Grid.Row="1">
+        <Grid Margin="10 , 0, 0 ,0" x:Name="chessBoard" Grid.Column="0" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -61,14 +61,17 @@
         <Grid Grid.Column="1">
 
         </Grid>
-        <Grid x:Name="menuGrid" Grid.Column="1" Grid.Row="1">
+        <Grid  x:Name="menuGrid" Grid.Column="1" Background="#FF262421" Margin="20,10,10,10" Grid.RowSpan="3">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <!--<Border Margin="15,40" BorderBrush="#FF54B14D" BorderThickness="10" CornerRadius="8" Grid.Row="1">
+            <Border  Margin="20,100,20,20" BorderBrush="#FF171717" BorderThickness="10" CornerRadius="8" Grid.Row="0">
+            <Button Style="{StaticResource NoHoverButton}" x:Name="timeButton" Content="10 perc 🠻"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" ></Button>
+            </Border>
+                 <!--<Border Margin="15,40" BorderBrush="#FF54B14D" BorderThickness="10" CornerRadius="8" Grid.Row="1">
                 <Button x:Name="startButton" Content="StartGame" Style="{StaticResource NoHoverButton}" Background="#FF54B14D" Foreground="#FFF1EDED" FontSize="24" FontFamily="Arial" FontWeight="Bold" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Click="StartGame" />
             </Border>-->
         </Grid>

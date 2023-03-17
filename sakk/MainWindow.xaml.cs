@@ -24,12 +24,13 @@ namespace sakk
     {
         public bool gameInProgress = false;
         List<ChessPiece> pieces = new();
-        
+        Border startButtonBorder = new Border();
         public static Board board = new();
 
         public bool IsWhiteTurn = true;
 
         public static MainWindow _instance;
+        public bool TimeExpanded = false;
 
         public MainWindow()
         {
@@ -49,13 +50,13 @@ namespace sakk
 
         private void createStartButton()
         {
-            Border border = new Border();
-            border.Margin = new Thickness(15, 40, 0, 0);
-            border.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x54, 0xB1, 0x4D));
-            border.BorderThickness = new Thickness(10);
-            border.CornerRadius = new CornerRadius(8);
-            border.Name = "startButtonWrapper";
-            Grid.SetRow(border, 1);
+            
+            startButtonBorder.Margin = new Thickness(15, 40, 15, 40);
+            startButtonBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0x54, 0xB1, 0x4D));
+            startButtonBorder.BorderThickness = new Thickness(10);
+            startButtonBorder.CornerRadius = new CornerRadius(8);
+            startButtonBorder.Name = "startButtonWrapper";
+            Grid.SetRow(startButtonBorder, 1);
 
             Button startButton = new Button();
             startButton.Name = "startButton";
@@ -70,9 +71,9 @@ namespace sakk
             startButton.BorderThickness = new Thickness(0);
             startButton.Click += StartGame;
             startButton.Style = (Style)FindResource("NoHoverButton");
-            border.Child = startButton;
+            startButtonBorder.Child = startButton;
 
-            menuGrid.Children.Add(border);
+            menuGrid.Children.Add(startButtonBorder);
         }
 
 
@@ -371,6 +372,14 @@ namespace sakk
         {
             gameInProgress = true;
             menuGrid.Children.Clear();
+        }
+
+        private void displayTimeOptions(object sender, RoutedEventArgs e)
+        {
+
+              Grid.SetRow(startButtonBorder, (TimeExpanded ? 1:2));
+
+            TimeExpanded = !TimeExpanded;
         }
     }
     
