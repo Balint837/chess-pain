@@ -93,12 +93,13 @@ namespace sakk
             if (board[checkPoint] == null)
             {
                 result.Add(checkPoint);
+                checkPoint = new Point(CurrentPosition.x, CurrentPosition.y + 2 * multiplier);
+                if (IsFirstMove && board[checkPoint] == null)
+                {
+                    result.Add(checkPoint);
+                }
             }
-            checkPoint = new Point(CurrentPosition.x, CurrentPosition.y + 2 * multiplier);
-            if (IsFirstMove && board[checkPoint] == null)
-            {
-                result.Add(checkPoint);
-            }
+            
 
             var tempPiece = MainWindow.board[new Point(CurrentPosition.x - 1, CurrentPosition.y + 1 * multiplier)];
             if (tempPiece != null && tempPiece.IsWhite != IsWhite)

@@ -14,6 +14,37 @@ namespace sakk
     {
         public Point? CurrentPosition { get; set; }
         public bool IsWhite { get; set; } = true;
+
+        public List<Point> GetAttackers(Board board)
+        {
+
+            return Board.QueenEndpoints(CurrentPosition!)
+                .Where(p => board[p] != null && board[p]!
+                .GetMovesAvailable(board).Any(x => x == CurrentPosition!))
+                .ToList();
+        }
+        public bool HasAttacker(Board board)
+        {
+
+            return GetAttackers(board).Count != 0;
+        }
+
+        public List<Point> GetAttackers(Board board, Point point, bool? isWhite)
+        {
+
+            return Board.QueenEndpoints(point)
+                .Where(
+                    p => board[p] != null
+                    && (isWhite == null ? true : (board[p].IsWhite != (bool)isWhite))
+                    && board[p]!
+                    .GetMovesAvailable(board)
+                    .Any(x => x == point))
+                .ToList();
+        }
+        public bool HasAttacker(Board board, Point point, bool? isWhite)
+        {
+            return GetAttackers(board, point, isWhite).Count != 0;
+        }
         public abstract List<Point> GetMovesAll();
         
         public virtual List<Point> GetMovesAll(Board board)
@@ -27,7 +58,17 @@ namespace sakk
         }
         public virtual List<Point> GetMovesPinned(Board board)
         {
-            return GetMovesAvailable(board);
+            List<Point> kingLine = Board.DrawLane(CurrentPosition, board.FindKingPoint(IsWhite));
+            var availableMoves = this.GetMovesAvailable(board);
+            foreach (Point attackerPoint in GetAttackers(board))
+            {
+                var attackerMoves = board[attackerPoint]!.GetMovesAll();
+                if (Utils.IsPointSetsEqual(kingLine, Utils.PointsAnd(attackerMoves, kingLine)))
+                {
+                    availableMoves = Utils.PointsAnd(board[attackerPoint]!.GetMovesAvailable(board), availableMoves);
+                }
+            }
+            return availableMoves;
         }
         public virtual List<Point> GetMovesFinal(Board board)
         {

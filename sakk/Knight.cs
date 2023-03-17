@@ -35,5 +35,10 @@ namespace sakk
 
         }
 
+        public override List<Point> GetMovesAvailable(Board board)
+        {
+            return GetMovesAll().Where(p => board[p] == null || board[p].IsWhite != IsWhite).ToList();
+        }
+
     }
 }

@@ -17,9 +17,65 @@ namespace sakk
         public List<Point> LegalMoves = new List<Point>();
         public ChessPiece selectedPiece;
 
-        public static List<Point> QueenEndpoints(Point p)
+        public Point FindKingPoint(bool isWhite)
         {
-            return new List<Point> { p };
+            return Pieces.Find(x => x is King && x.IsWhite == isWhite)!.CurrentPosition!;
+        }
+
+        public static List<Point> QueenEndpoints(Point p, bool inclusiveStart = false)
+        {
+            List<Point> result = new();
+            var _this = MainWindow.board;
+            ChessPiece? currentPiece = _this[p];
+            for (int xp = -1; xp < 2; xp++)
+            {
+                for (int yp = -1; yp < 2; yp++)
+                {
+                    if (xp == 0 && yp == 0) continue;
+                    int x = p.x+xp;
+                    int y = p.y+yp;
+                    while (_this[x,y] == null && x > -1 && x < 8 && y > -1 && y < 8)
+                    {
+                        x += xp;
+                        y += yp;
+                    }
+                    bool forceEnter = false;
+                    if (_this[x,y] == null)
+                    {
+                        forceEnter = true;
+                        x -= xp;
+                        y -= yp;
+                    }
+                    if (currentPiece == null || forceEnter)
+                    {
+                        if (!(p.x == x && p.y == y))
+                        {
+                            result.Add(new Point(x,y));
+                        }
+                    }
+                    else
+                    {
+                        if (currentPiece.IsWhite != _this[x, y]!.IsWhite)
+                        {
+                            result.Add(new Point(x, y));
+                        }
+                        else
+                        {
+                            x -= xp;
+                            y -= yp;
+                            if (!(p.x == x && p.y == y))
+                            {
+                                result.Add(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+            if (inclusiveStart)
+            {
+                result.Add(new Point(p.x, p.y));
+            }
+            return Utils.FilterPoints(result);
         }
         public static List<Point> KnightMoves(Point p, bool? isWhite = null)
         {
@@ -70,13 +126,12 @@ namespace sakk
             x += xp;
             y += yp;
 
-            while (p2.x != x)
+            while (p2.x != x || p2.y != y)
             {
                 result.Add(new Point(x, y));
                 x += xp;
                 y += yp;
             }
-
             if (forceInclusiveEnd || _this[p2] == null || (_this[p2] != null && _this[p1] != null && (isWhite == null ? (_this[p1]!.IsWhite != _this[p2]!.IsWhite) : (bool)isWhite)))
             {
                 result.Add(new Point(x, y));
@@ -119,7 +174,7 @@ namespace sakk
                 y -= yp;
             }
 
-            while (x > 0 && x < 7 && y > 0 && y < 7)
+            while ((xp == 1 ? (x < 8) : (x > -1)) && (yp == 1 ? (y < 8) : (y > -1)))
             {
                 result.Add(new Point(x, y));
                 x += xp;
