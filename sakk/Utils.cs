@@ -63,7 +63,21 @@ namespace sakk
 
         public static bool IsPointSetsEqual(List<Point> points1, List<Point> points2)
         {
-            return points1.OrderBy(p => p.y * 8 + p.x).SequenceEqual(points2.OrderBy(p => p.y * 8 + p.x));
+            return !points1.Except(points2).Any() && !points2.Except(points1).Any();
+            //if (points1.Count != points2.Count)
+            //{
+            //    return false;
+            //}
+            //var temp1 = points1.OrderBy(p => p.y * 8 + p.x).ToArray();
+            //var temp2 = points2.OrderBy(p => p.y * 8 + p.x).ToArray();
+            //for (int i = 0; i < temp1.Length; i++)
+            //{
+            //    if (temp1[i] != temp2[i])
+            //    {
+            //        return false;
+            //    }
+            //}
+            //return true;
         }
     }
 }
