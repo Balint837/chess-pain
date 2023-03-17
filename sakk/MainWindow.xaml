@@ -24,7 +24,7 @@
         </Style>
 
     </Window.Resources>
-    <Grid Background="#FF1F1F1F">
+    <Grid Background="#FF262421">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="10*"/>
@@ -59,7 +59,18 @@
 
         </Grid>
         <Grid Grid.Column="1">
-            
+
+        </Grid>
+        <Grid x:Name="menuGrid" Grid.Column="1" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <!--<Border Margin="15,40" BorderBrush="#FF54B14D" BorderThickness="10" CornerRadius="8" Grid.Row="1">
+                <Button x:Name="startButton" Content="StartGame" Style="{StaticResource NoHoverButton}" Background="#FF54B14D" Foreground="#FFF1EDED" FontSize="24" FontFamily="Arial" FontWeight="Bold" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Click="StartGame" />
+            </Border>-->
         </Grid>
     </Grid>
 </Window>
