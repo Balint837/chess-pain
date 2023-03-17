@@ -20,8 +20,10 @@ namespace sakk
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    
     public partial class MainWindow : Window
     {
+        //Grid chessBoard = new Grid();
         List<ChessPiece> pieces = new();
         
         public static Board board = new();
@@ -34,12 +36,41 @@ namespace sakk
         {
             _instance = this;
             InitializeComponent();
-            setStartingPosition(); 
-            
+
+            setStartingPosition();
 
 
 
         }
+
+        
+
+        //private void displayChessBoard()
+        //{
+
+        //    clearMainGrid();
+        //    ColumnDefinition column1 = new ColumnDefinition();
+        //    ColumnDefinition column2 = new ColumnDefinition();
+
+        //    // Set the column widths
+        //    column1.Width = new GridLength(10, GridUnitType.Star);
+        //    column2.Width = new GridLength(2, GridUnitType.Star);
+
+        //    // Add the column definitions to the Grid control
+        //    mainGrid.ColumnDefinitions.Add(column1);
+        //    mainGrid.ColumnDefinitions.Add(column2);
+
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        chessBoard.ColumnDefinitions.Add(new ColumnDefinition());
+        //        chessBoard.RowDefinitions.Add(new RowDefinition());
+
+        //    }
+        //    chessBoard.Name = "chessBoard";
+        //    mainGrid.Children.Add(chessBoard);
+
+        //}
+
         private void setStartingPosition()
         {
             for (int i = 0; i < 8; i++)
@@ -50,6 +81,7 @@ namespace sakk
                     button.Padding = new Thickness(7);
                     button.Click += Button_Click;
                     button.BorderThickness = new Thickness(0);
+                    button.Style =  (Style)FindResource("NoHoverButton");
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
                     button.Name = "button" + i + j;
@@ -218,6 +250,17 @@ namespace sakk
             return chessBoard.Children
             .Cast<UIElement>()
             .First(e => Grid.GetRow(e) == row && Grid.GetColumn(e) == column);
+        }
+
+        public void returnToMainMenu() {
+            
+        }
+
+        private void StartButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            //displayChessBoard();
+            setStartingPosition();
         }
     }
     

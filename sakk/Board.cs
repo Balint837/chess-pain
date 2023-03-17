@@ -19,7 +19,7 @@ namespace sakk
 
         public static List<Point> QueenEndpoints(Point p)
         {
-            
+            return new List<Point> { p };
         }
         public static List<Point> KnightMoves(Point p, bool? isWhite = null)
         {

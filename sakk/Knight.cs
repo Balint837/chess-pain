@@ -29,7 +29,7 @@ namespace sakk
             result.Add(new Point(CurrentPosition.x + 2, CurrentPosition.y - 1));
             result.Add(new Point(CurrentPosition.x - 2, CurrentPosition.y + 1));
             result.Add(new Point(CurrentPosition.x - 2, CurrentPosition.y - 1));
-            
+                
             return Utils.FilterPoints(result);
             
 
