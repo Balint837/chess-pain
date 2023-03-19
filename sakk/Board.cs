@@ -318,9 +318,6 @@ namespace sakk
             Pieces.Add(new King(new Point(4, 0), false));
             Pieces.Add(new Queen(new Point(3, 7), true));
             Pieces.Add(new Queen(new Point(3, 0), false));
-
-
-
         }
             
     }

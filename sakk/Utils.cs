@@ -10,6 +10,65 @@ namespace sakk
 {
     public static class Utils
     {
+        public static int[] Primes = new int[] {2, 3, 5, 7};
+
+        public static int PieceToNumber(ChessPiece piece)
+        {
+            int result = -1;
+            switch (piece)
+            {
+                case Rook p:
+                    result = 1;
+                    if (p.IsWhite)
+                    {
+                        result *= Primes[1];
+                    }
+                    if (p.IsFirstMove)
+                    {
+                        result *= Primes[2];
+                    }
+                    break;
+                case Knight _:
+                    result = Primes[0];
+                    break;
+                case Bishop _:
+                    result = (int)Math.Pow(Primes[0], 2);
+                    break;
+                case Queen _:
+                    result = (int)Math.Pow(Primes[0], 3);
+                    break;
+                case Pawn p:
+                    result = (int)Math.Pow(Primes[0], 4);
+                    if (p.IsWhite)
+                    {
+                        result *= 3;
+                    }
+                    if (p.IsFirstMove)
+                    {
+                        result *= 5;
+                    }
+                    if (p.mayBePassanted)
+                    {
+                        result *= 7;
+                    }
+                    break;
+                case King p:
+                    result = (int)Math.Pow(Primes[0], 5);
+                    if (p.IsWhite)
+                    {
+                        result *= 3;
+                    }
+                    if (p.IsFirstMove)
+                    {
+                        result *= 5;
+                    }
+                    break;
+                default:
+                    return -1;
+            }
+            return result;
+
+        }
         public static void DisplayPointList(List<Point> points)
         {
             MessageBox.Show('[' + string.Join(", ", points.Select(p => $"({p.x}, {p.y})")) + ']');
