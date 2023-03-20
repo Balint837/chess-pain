@@ -11,6 +11,7 @@ namespace sakk
     public static class Utils
     {
         public static int[] Primes = new int[] {2, 3, 5, 7};
+        public static Type[] pieceTypes = new Type[] { typeof(Rook), typeof(Knight), typeof(Bishop), typeof(Queen), typeof(Pawn), typeof(King) };
 
         public static int PieceToNumber(ChessPiece piece)
         {
@@ -22,10 +23,6 @@ namespace sakk
                     if (p.IsWhite)
                     {
                         result *= Primes[1];
-                    }
-                    if (p.IsFirstMove)
-                    {
-                        result *= Primes[2];
                     }
                     break;
                 case Knight _:
@@ -41,34 +38,68 @@ namespace sakk
                     result = (int)Math.Pow(Primes[0], 4);
                     if (p.IsWhite)
                     {
-                        result *= 3;
-                    }
-                    if (p.IsFirstMove)
-                    {
-                        result *= 5;
+                        result *= Primes[1];
                     }
                     if (p.mayBePassanted)
                     {
-                        result *= 7;
+                        result *= Primes[2];
                     }
                     break;
                 case King p:
                     result = (int)Math.Pow(Primes[0], 5);
                     if (p.IsWhite)
                     {
-                        result *= 3;
-                    }
-                    if (p.IsFirstMove)
-                    {
-                        result *= 5;
+                        result *= Primes[1];
                     }
                     break;
                 default:
                     return -1;
             }
             return result;
-
         }
+
+        public static Dictionary<int, int> PiecesToNumberDict(IEnumerable<ChessPiece> pieces)
+        {
+            Dictionary<int, int> result = new();
+            foreach (ChessPiece piece in pieces)
+            {
+                result[piece.CurrentPosition!.y * 8 + piece.CurrentPosition.x] = PieceToNumber(piece);
+            }
+            return result;
+        }
+
+        public static ChessPiece NumberToPiece(int key, int value)
+        {
+            var primeFactors = PrimeFactorization(value);
+            var piece = (ChessPiece)(pieceTypes[primeFactors[2]].GetConstructors()[0].Invoke(new object[] {new Point(key % 8, key / 8), primeFactors[3] != 0 }));
+            if (piece.GetType() == typeof(Pawn))
+            {
+                ((Pawn)piece).mayBePassanted = primeFactors[5] != 0;
+            }
+            return piece;
+        }
+
+        public static List<ChessPiece> PositionToPieceList(Dictionary<int,int> position)
+        {
+            return position.Select(x => NumberToPiece(x.Key, x.Value)).ToList();
+        }
+
+        public static Dictionary<int,int> PrimeFactorization(int n)
+        {
+            Dictionary<int, int> result = new();
+            foreach (int prime in Primes)
+            {
+                result[prime] = 0;
+                if (n % prime == 0)
+                {
+                    n/=prime;
+                    result[prime]++;
+
+                }
+            }
+            return result;
+        }
+
         public static void DisplayPointList(List<Point> points)
         {
             MessageBox.Show('[' + string.Join(", ", points.Select(p => $"({p.x}, {p.y})")) + ']');
