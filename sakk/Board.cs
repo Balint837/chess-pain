@@ -155,17 +155,6 @@ namespace sakk
 
             int x = p1.x;
             int y = p1.y;
-
-            //troll code xd (same result as actual code, less readable)
-            //
-            //for (int i = 0; i < 2; i++)
-            //{
-            //    while (x > 0 && x < 7 && y > 0 && y < 7)
-            //    {
-            //        x += xp * (2*i - 1);
-            //        y += yp * (2*i - 1);
-            //    }
-            //}
             
 
             while (x > 0 && x < 7 && y > 0 && y < 7)

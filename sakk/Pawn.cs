@@ -131,22 +131,5 @@ namespace sakk
 
             return Utils.FilterPoints(result);
         }
-        //public override List<Point> GetPossibleMoves(Board board)
-        //{
-
-        //    {
-        //        List<Point> result = new List<Point>();
-        //        result = GetPossibleMoves();
-        //        if (IsWhite)
-        //        {
-        //            if (board[CurrentPosition.x + 1, CurrentPosition.y] != null && board[CurrentPosition.x + 1, CurrentPosition.y].GetType == "Pawn")
-        //            {
-        //            }
-
-        //        }
-
-        //        return Utils.FilterPoints(result);
-        //    }
-        //}
     }
 }
