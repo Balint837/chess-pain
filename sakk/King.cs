@@ -37,7 +37,16 @@ namespace sakk
 
         public override List<Point> GetMovesAvailable(Board board)
         {
-            return GetMovesAll().Where(p => (board[p] == null || board[p].IsWhite != IsWhite) && !HasAttacker(board, p, IsWhite)).ToList();
+            return GetMovesAll()
+                .Where(
+                    p => ((board[p] == null && !HasAttacker(board, p, IsWhite)) ||
+                        (board[p] != null && board[p].IsWhite != IsWhite && !board[p].HasDefender(board))
+                )).ToList();
+        }
+
+        public override List<Point> GetMovesDefending(Board board)
+        {
+            return GetMovesAll();
         }
 
     }

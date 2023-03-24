@@ -131,5 +131,18 @@ namespace sakk
 
             return Utils.FilterPoints(result);
         }
+
+
+        public override List<Point> GetMovesDefending(Board board)
+        {
+            List<Point> result = new List<Point>();
+            int multiplier = IsWhite ? -1 : 1;
+
+
+            result.Add(new Point(CurrentPosition.x - 1, CurrentPosition.y + 1 * multiplier));
+            result.Add(new Point(CurrentPosition.x + 1, CurrentPosition.y + 1 * multiplier));
+
+            return Utils.FilterPoints(result);
+        }
     }
 }

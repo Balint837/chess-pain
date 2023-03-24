@@ -10,6 +10,10 @@ namespace sakk
 {
     public static class Utils
     {
+        public static T? Cast<T>(T? obj)
+        {
+            return obj;
+        }
         public static void DisplayPointList(List<Point> points)
         {
             MessageBox.Show('[' + string.Join(", ", points.Select(p => $"({p.x}, {p.y})")) + ']');
@@ -63,7 +67,10 @@ namespace sakk
 
         public static bool IsPointSetsEqual(List<Point> points1, List<Point> points2)
         {
-            return !points1.Except(points2).Any() && !points2.Except(points1).Any();
+
+            var t1 = points1.Select(p=>p.y*8+p.x);
+            var t2 = points2.Select(p=>p.y*8+p.x);
+            return !t1.Except(t2).Any() && !t2.Except(t1).Any();
         }
     }
 }

@@ -40,5 +40,10 @@ namespace sakk
             return GetMovesAll().Where(p => board[p] == null || board[p].IsWhite != IsWhite).ToList();
         }
 
+        public override List<Point> GetMovesDefending(Board board)
+        {
+            return GetMovesAll();
+        }
+
     }
 }

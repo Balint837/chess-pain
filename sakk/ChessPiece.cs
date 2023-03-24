@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using static System.Net.Mime.MediaTypeNames;
@@ -41,6 +42,19 @@ namespace sakk
                     .Any(x => x == point))
                 .ToList();
         }
+
+        public bool HasDefender(Board board)
+        {
+
+            return Board.QueenEndpoints(this.CurrentPosition)
+                .Where(
+                    p => board[p] != null
+                    && (board[p].IsWhite == this.IsWhite)
+                    && board[p]!
+                    .GetMovesDefending(board)
+                    .Any(x => x == this.CurrentPosition))
+                .ToList().Any();
+        }
         public bool HasAttacker(Board board, Point point, bool? isWhite)
         {
             return GetAttackers(board, point, isWhite).Count != 0;
@@ -51,29 +65,90 @@ namespace sakk
         {
             return GetMovesAll();
         }
+
+        public virtual List<Point> GetMovesAllSelfInclusive()
+        {
+            var temp = GetMovesAll();
+            temp.Add(new(CurrentPosition!.x, CurrentPosition.y));
+            return temp;
+        }
         public virtual List<Point> GetMovesAvailable(Board board)
         {
          
             return GetMovesAll(board);
         }
+
+        public abstract List<Point> GetMovesDefending(Board board);
         public virtual List<Point> GetMovesPinned(Board board)
         {
             List<Point> kingLine = Board.DrawLane(CurrentPosition, board.FindKingPoint(IsWhite));
-            var availableMoves = this.GetMovesAvailable(board);
+            var availableMoves = GetMovesAvailable(board);
             foreach (Point attackerPoint in GetAttackers(board))
             {
-                var attackerMoves = board[attackerPoint]!.GetMovesAll();
+                var attackerMoves = board[attackerPoint]!.GetMovesAllSelfInclusive();
                 if (Utils.IsPointSetsEqual(kingLine, Utils.PointsAnd(attackerMoves, kingLine)))
                 {
-                    availableMoves = Utils.PointsAnd(board[attackerPoint]!.GetMovesAvailable(board), availableMoves);
+                    List<Point> midSection = Board.DrawSection(board[attackerPoint]!.CurrentPosition, board.FindKingPoint(IsWhite), forceInclusiveStart: true);
+                    int findIdx = midSection.IndexOf(CurrentPosition);
+                    if (findIdx != -1)
+                    {
+                        availableMoves = Utils.PointsAnd(midSection, availableMoves);
+                        break;
+                    }
                 }
             }
             return availableMoves;
         }
         public virtual List<Point> GetMovesFinal(Board board)
         {
-            return GetMovesPinned(board);
+            var attackerPoints = GetAttackers(board, board.FindKingPoint(IsWhite), IsWhite);
+            if (this is not King)
+            {
+                switch (attackerPoints.Count)
+                {
+                    case 0:
+                        return GetMovesPinned(board);
+                    case 1:
+                        return Utils.PointsAnd(GetMovesPinned(board), Board.DrawSection(board[attackerPoints[0]]!.CurrentPosition!, board.FindKingPoint(IsWhite), forceInclusiveStart: true));
+                    default:
+                        return new();
+                }
+            }
+            else
+            {
+                var result = GetMovesAvailable(board);
+                switch (attackerPoints.Count)
+                {
+                    case 0:
+                        return result;
+                    case 1:
+                        if (!result.Any())
+                        {
+                            bool foundHero = false;
+                            foreach (ChessPiece piece in board)
+                            {
+                                if (piece.IsWhite == IsWhite && piece is not King && piece.GetMovesFinal(board).Any())
+                                {
+                                    foundHero = true;
+                                    break;
+                                }
+                            }
+                            if (!foundHero)
+                            {
+                                board.isMated = IsWhite;
+                            }
+                        }
+                        return result;
+                    default:
+                        if (!result.Any())
+                        {
+                            board.isMated = IsWhite;
+                        }
+                        return result;
+                }
+            }
         }
+
         public static BitmapImage[] bitmapImages = new BitmapImage[]
         {
             new BitmapImage(new Uri("pack://application:,,,/images/br.png")),

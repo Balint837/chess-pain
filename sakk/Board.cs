@@ -16,6 +16,7 @@ namespace sakk
         List<ChessPiece> Pieces = new List<ChessPiece>();
         public List<Point> LegalMoves = new List<Point>();
         public ChessPiece selectedPiece;
+        public bool? isMated = null;
 
         public Point FindKingPoint(bool isWhite)
         {

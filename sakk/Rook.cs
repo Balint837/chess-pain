@@ -55,5 +55,17 @@ namespace sakk
             return Utils.FilterPoints(result);
         }
 
+        public override List<Point> GetMovesDefending(Board board)
+        {
+
+            List<Point> result = new List<Point>();
+            foreach (Point p in Board.QueenEndpoints(CurrentPosition!).Where(p => p.x == CurrentPosition!.x ^ p.y == CurrentPosition.y))
+            {
+                result.AddRange(Board.DrawSection(CurrentPosition!, p, forceInclusiveEnd: true));
+            };
+
+            return Utils.FilterPoints(result);
+        }
+
     }
 }
