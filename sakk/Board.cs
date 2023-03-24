@@ -292,43 +292,6 @@ namespace sakk
             Pieces = startingPosition;
         }
 
-        public void SetStartPosition(Dictionary<int,int> position)
-        {
-            foreach (ChessPiece piece in Utils.PositionToPieceList(position))
-            {
-                if (piece is Pawn)
-                {
-                    int startLane = piece.IsWhite ? 6 : 1;
-                    if (piece.CurrentPosition.y == startLane)
-                    {
-                        ((Pawn)piece).IsFirstMove = true;
-                    }
-                }
-                if (piece is Rook)
-                {
-                    int startLane = piece.IsWhite ? 0 : 7;
-                    if (piece.CurrentPosition.y == startLane && (piece.CurrentPosition.x == 0 || piece.CurrentPosition.y == 0))
-                    {
-                        ((Rook)piece).IsFirstMove = true;
-                    }
-                }
-                if (piece is King)
-                {
-                    if (piece.IsWhite)
-                    {
-                        if (piece.CurrentPosition.x == 3 && piece)
-                        {
-
-                        }
-                    }
-                    else
-                    {
-
-                    }
-                }
-            };
-        }
-
         public void SetDefaultChessPosition()
         {
 
@@ -354,44 +317,6 @@ namespace sakk
             Pieces.Add(new King(new Point(4, 0), false));
             Pieces.Add(new Queen(new Point(3, 7), true));
             Pieces.Add(new Queen(new Point(3, 0), false));
-        }
-        public static Dictionary<int, int> DefaultStartingPosition
-        {
-            get
-            {
-                Dictionary<int,int> result = new()
-                {
-                    // Knights
-                    {6+7*8, 2 * 3},
-                    {1+7*8, 2 * 3},
-                    {6+0, 2},
-                    {1+0, 2},
-                    // Bishops
-                    {5+7*8, 4 * 3},
-                    {2+7*8, 4 * 3},
-                    {5+0, 4},
-                    {2+0, 4}
-                };
-
-                //Add rooks
-                for (int i = 0; i < 2; i++)
-                {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        result[(j * 7) + (i * 7 * 8)] = (i == 1 ? 3 : 1);
-                        result[(1 + j * 5) + (i * 7 * 8)] = 2 * (i == 1 ? 3 : 1);
-                        result[(2 + j * 3) + (i * 7 * 8)] = 4 * (i == 1 ? 3 : 1);
-                    }
-                }
-                //Add kings and queens
-                for (int i = 0; i < 2; i++)
-                {
-                    result[4 + (i * 7 * 8)] = 32 * (i == 1 ? 3 : 1);
-                    result[3 + (i * 7 * 8)] = 8 * (i == 1 ? 3 : 1);
-                }
-
-                return result;
-            }
         }
             
     }
