@@ -19,9 +19,10 @@ namespace sakk
         public List<Point> GetAttackers(Board board)
         {
 
-            return Board.QueenEndpoints(CurrentPosition!)
-                .Where(p => board[p] != null && board[p]!
-                .GetMovesAvailable(board).Any(x => x == CurrentPosition!))
+            return Board.QueenEndpoints(board, CurrentPosition!)
+                .Where(p => board[p] != null && (board[p] is Pawn ? (board[p]!
+                .GetMovesDefending(board).Any(x => x == CurrentPosition!)) : (board[p]!
+                .GetMovesAvailable(board).Any(x => x == CurrentPosition!))))
                 .ToList();
         }
         public bool HasAttacker(Board board)
@@ -33,20 +34,33 @@ namespace sakk
         public List<Point> GetAttackers(Board board, Point point, bool? isWhite)
         {
 
-            return Board.QueenEndpoints(point)
+            return Board.QueenEndpoints(board, point)
                 .Where(
                     p => board[p] != null
                     && (isWhite == null ? true : (board[p].IsWhite != (bool)isWhite))
-                    && board[p]!
-                    .GetMovesAvailable(board)
-                    .Any(x => x == point))
+                    && (board[p] is Pawn ? (board[p]!
+                .GetMovesDefending(board).Any(x => x == CurrentPosition!)) : (board[p]!
+                .GetMovesAvailable(board).Any(x => x == CurrentPosition!))))
                 .ToList();
         }
 
         public bool HasDefender(Board board)
         {
 
-            return Board.QueenEndpoints(this.CurrentPosition)
+            return Board.QueenEndpoints(board, this.CurrentPosition, ignoreColor: true)
+                .Where(
+                    p => board[p] != null
+                    && (board[p].IsWhite == this.IsWhite)
+                    && board[p]!
+                    .GetMovesDefending(board)
+                    .Any(x => x == this.CurrentPosition))
+                .ToList().Any();
+        }
+
+
+        public bool HasDefenderNull(Board board, Point position, bool IsWhite)
+        {
+            return Board.QueenEndpoints(board, this.CurrentPosition, ignoreColor: true)
                 .Where(
                     p => board[p] != null
                     && (board[p].IsWhite == this.IsWhite)
@@ -88,7 +102,7 @@ namespace sakk
                 var attackerMoves = board[attackerPoint]!.GetMovesAllSelfInclusive();
                 if (Utils.IsPointSetsEqual(kingLine, Utils.PointsAnd(attackerMoves, kingLine)))
                 {
-                    List<Point> midSection = Board.DrawSection(board[attackerPoint]!.CurrentPosition, board.FindKingPoint(IsWhite), forceInclusiveStart: true);
+                    List<Point> midSection = Board.DrawSection(board, board[attackerPoint]!.CurrentPosition, board.FindKingPoint(IsWhite), forceInclusiveStart: true);
                     int findIdx = midSection.IndexOf(CurrentPosition);
                     if (findIdx != -1)
                     {
@@ -109,7 +123,7 @@ namespace sakk
                     case 0:
                         return GetMovesPinned(board);
                     case 1:
-                        return Utils.PointsAnd(GetMovesPinned(board), Board.DrawSection(board[attackerPoints[0]]!.CurrentPosition!, board.FindKingPoint(IsWhite), forceInclusiveStart: true));
+                        return Utils.PointsAnd(GetMovesPinned(board), Board.DrawSection(board, board[attackerPoints[0]]!.CurrentPosition!, board.FindKingPoint(IsWhite), forceInclusiveStart: true));
                     default:
                         return new();
                 }
@@ -135,14 +149,14 @@ namespace sakk
                             }
                             if (!foundHero)
                             {
-                                board.isMated = IsWhite;
+                                board.IsMated = IsWhite;
                             }
                         }
                         return result;
                     default:
                         if (!result.Any())
                         {
-                            board.isMated = IsWhite;
+                            board.IsMated = IsWhite;
                         }
                         return result;
                 }

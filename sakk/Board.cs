@@ -8,25 +8,26 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Media.TextFormatting;
 
 namespace sakk
 {
     public class Board
     {
-        List<ChessPiece> Pieces = new List<ChessPiece>();
+        public List<ChessPiece> Pieces = new List<ChessPiece>();
         public List<Point> LegalMoves = new List<Point>();
         public ChessPiece selectedPiece;
-        public bool? isMated = null;
+        public bool? IsMated = null;
+        public bool IsMain = true;
 
         public Point FindKingPoint(bool isWhite)
         {
             return Pieces.Find(x => x is King && x.IsWhite == isWhite)!.CurrentPosition!;
         }
 
-        public static List<Point> QueenEndpoints(Point p, bool inclusiveStart = false)
+        public static List<Point> QueenEndpoints(Board _this, Point p, bool inclusiveStart = false, bool ignoreColor = false)
         {
             List<Point> result = new();
-            var _this = MainWindow.board;
             ChessPiece? currentPiece = _this[p];
             for (int xp = -1; xp < 2; xp++)
             {
@@ -56,7 +57,7 @@ namespace sakk
                     }
                     else
                     {
-                        if (currentPiece.IsWhite != _this[x, y]!.IsWhite)
+                        if (ignoreColor || (currentPiece.IsWhite != _this[x, y]!.IsWhite))
                         {
                             result.Add(new Point(x, y));
                         }
@@ -78,9 +79,8 @@ namespace sakk
             }
             return Utils.FilterPoints(result);
         }
-        public static List<Point> KnightMoves(Point p, bool? isWhite = null)
+        public static List<Point> KnightMoves(Board _this, Point p, bool? isWhite = null)
         {
-            var _this = MainWindow.board;
             List<Point> result = new List<Point>
             {
                 new Point(p.x + 1, p.y + 2),
@@ -105,7 +105,13 @@ namespace sakk
 
         public static List<Point> DrawSection(Point p1, Point p2, bool forceInclusiveEnd = false, bool forceInclusiveStart = false, bool allowInvalid = false, bool? isWhite = null)
         {
-            var _this = MainWindow.board;
+            return DrawSection(MainWindow.board, p1, p2, forceInclusiveEnd, forceInclusiveStart, allowInvalid, isWhite);
+        }
+
+
+        public static List<Point> DrawSection(Board board, Point p1, Point p2, bool forceInclusiveEnd = false, bool forceInclusiveStart = false, bool allowInvalid = false, bool? isWhite = null)
+        {
+            var _this = board;
             List<Point> result = new();
 
             int xp = p1.x == p2.x ? 0 : (p1.x < p2.x ? 1 : -1);
@@ -116,11 +122,11 @@ namespace sakk
             {
                 return allowInvalid ? InvalidQueryResult() : result;
             }
-            
+
             int x = p1.x;
             int y = p1.y;
 
-            if (forceInclusiveStart || _this[x,y] == null)
+            if (forceInclusiveStart || _this[x, y] == null)
             {
                 result.Add(new Point(x, y));
             }
@@ -200,9 +206,12 @@ namespace sakk
             }
             try
             {
-                Button button = (Button)MainWindow._instance.GetPieceByGridIdx(p.CurrentPosition!.y, p.CurrentPosition.x);
-                Grid buttonGrid = button.Content as Grid;
-                buttonGrid.Children.Clear();
+                if (IsMain)
+                {
+                    Button button = (Button)MainWindow._instance.GetPieceByGridIdx(p.CurrentPosition!.y, p.CurrentPosition.x);
+                    Grid buttonGrid = button.Content as Grid;
+                    buttonGrid.Children.Clear();
+                }
                 Pieces.Remove(p);
                 return true;
             }
@@ -280,6 +289,12 @@ namespace sakk
         public Board(List<ChessPiece> startingPosition)
         {
             Pieces = startingPosition;
+        }
+
+        public Board(List<ChessPiece> startingPosition, bool isMain)
+        {
+            Pieces = startingPosition;
+            IsMain = isMain;
         }
 
         public void SetDefaultChessPosition()
