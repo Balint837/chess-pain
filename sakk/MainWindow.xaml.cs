@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -14,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+
 
 namespace sakk
 {
@@ -22,18 +25,32 @@ namespace sakk
     /// </summary>
     public partial class MainWindow : Window
     {
+        WrapPanel wrapPanel = new WrapPanel();
+        int?[] timeOptions = { 1, 5, 10,30,null };
         public bool gameInProgress = false;
         List<ChessPiece> pieces = new();
         Border startButtonBorder = new Border();
         public static Board board = new();
-
+        Border timeBorder = new Border();
         public bool IsWhiteTurn = true;
 
         public static MainWindow _instance;
         public bool TimeExpanded = false;
+        int? selectedTime = 10;
+        DispatcherTimer Blacktimer;
+        DispatcherTimer Whitetimer;
+
+
+
 
         public MainWindow()
         {
+            Blacktimer = new DispatcherTimer();
+            Blacktimer.Interval = TimeSpan.FromSeconds(1);
+            Blacktimer.Tick += Timer_Tick;
+            Whitetimer = new DispatcherTimer();
+            Whitetimer.Interval = TimeSpan.FromSeconds(1);
+            Whitetimer.Tick += Timer_Tick;
             _instance = this;
             InitializeComponent();
 
@@ -43,9 +60,37 @@ namespace sakk
 
         }
 
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+        }
+
         private void createMenu()
         {
             createStartButton();
+            createTimeButton();
+        }
+
+        private void createTimeButton()
+        {
+            timeBorder.Name = "timeBorder";
+            timeBorder.Margin = new Thickness(20, 100, 20, 20);
+            timeBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
+            timeBorder.BorderThickness = new Thickness(10);
+            timeBorder.CornerRadius = new CornerRadius(8);
+            timeBorder.SetValue(Grid.RowProperty, 0);
+
+            Button timeButton_Copy = new Button();
+            timeButton_Copy.Name = "timeButton_Copy";
+            timeButton_Copy.Style = (Style)FindResource("NoHoverButton");
+            timeButton_Copy.Content = "10 perc 🠻";
+            timeButton_Copy.Background = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
+            timeButton_Copy.Foreground = new SolidColorBrush(Color.FromRgb(0xc3, 0xc3, 0xc3));
+            timeButton_Copy.FontSize = 30;
+            timeButton_Copy.BorderBrush = null;
+            timeButton_Copy.Click += displayTimeOptions;
+
+            timeBorder.Child = timeButton_Copy;
+            menuGrid.Children.Add(timeBorder);
         }
 
         private void createStartButton()
@@ -385,9 +430,75 @@ namespace sakk
         private void displayTimeOptions(object sender, RoutedEventArgs e)
         {
 
-              Grid.SetRow(startButtonBorder, (TimeExpanded ? 1:2));
+              
+            if (!TimeExpanded)
+            {
+                Grid.SetRow(startButtonBorder, 2);
 
+                wrapPanel.SetValue(Grid.RowProperty, 1);
+                wrapPanel.Orientation = Orientation.Horizontal;
+
+                bool isSecond = false;
+                foreach (int? time in timeOptions)
+                {
+
+                    Border border = new Border();
+
+                    border.BorderBrush = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
+                    border.BorderThickness = new Thickness(10);
+                    border.CornerRadius = new CornerRadius(8);
+
+                    border.Margin = new Thickness(9, 0, 0, 10);
+
+                    border.Width = time == null ? 269 : 130;
+                    border.Height = 66;
+
+                    Button button = new Button();
+                    button.Style = (Style)FindResource("NoHoverButton");
+                    button.Content = time == null ? "∞" : $"{time}";
+                    button.Background = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
+                    button.Foreground = new SolidColorBrush(Color.FromRgb(0xc3, 0xc3, 0xc3));
+                    button.FontSize = 30;
+                    button.BorderBrush = null;
+                    button.Tag = time;
+                    button.Margin = new Thickness(0, 0, 0, 0);
+                    button.Click += setTime;
+
+                    border.Child = button;
+                    wrapPanel.Children.Add(border);
+                    isSecond = !isSecond;
+                }
+                menuGrid.Children.Add(wrapPanel);
+            }
+            else
+            {
+                Grid.SetRow(startButtonBorder, 1);
+                menuGrid.Children.Remove(wrapPanel);
+            }
             TimeExpanded = !TimeExpanded;
+        }
+
+        private void setTime(object sender, RoutedEventArgs e)
+        {
+            displayTimeOptions(sender, e);
+            Button mainButton = timeBorder.Child as Button;
+            Button timeButton = sender as Button;
+            mainButton.Tag = timeButton.Tag;
+            selectedTime = (int?)timeButton.Tag;
+           
+            if (timeButton.Tag == null) {
+                mainButton.Content = timeButton.Content + "🠻";
+                WhiteTimer.Opacity = 0;
+                BlackTimer.Opacity = 0;
+            }
+            else
+            {
+                WhiteTimer.Opacity = 1;
+                BlackTimer.Opacity = 1;
+                ((Button)WhiteTimer.Child).Content = timeButton.Content+ ":00";
+                ((Button)BlackTimer.Child).Content = timeButton.Content+ ":00";
+                mainButton.Content = timeButton.Content + " perc 🠻";
+            }
         }
     }
     

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:sakk"
+        xmlns:local="clr-namespace:System.Windows.Threading;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="MainWindow" Height="960" Width="1120" ResizeMode="CanMinimize">
     <Window.Resources>
@@ -68,12 +69,42 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <Border  Margin="20,100,20,20" BorderBrush="#FF171717" BorderThickness="10" CornerRadius="8" Grid.Row="0">
-            <Button Style="{StaticResource NoHoverButton}" x:Name="timeButton" Content="10 perc 🠻"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" ></Button>
-            </Border>
-                 <!--<Border Margin="15,40" BorderBrush="#FF54B14D" BorderThickness="10" CornerRadius="8" Grid.Row="1">
+            <!--<Border x:Name="timeBorder"  Margin="20,100,20,20" BorderBrush="#FF171717" BorderThickness="10" CornerRadius="8" Grid.Row="0">
+                <Button Style="{StaticResource NoHoverButton}" x:Name="timeButton_Copy" Content="10 perc 🠻"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" />
+            </Border>-->
+            <!--<WrapPanel  Grid.Row="1" Orientation="Horizontal"  >
+                <Border Margin="0,0,0,10" BorderBrush="#FF171717" BorderThickness="10"   CornerRadius="8" Width="130" Height="66">
+                    <Button Style="{StaticResource NoHoverButton}" Content="10"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" Margin="0,0,0,0" />
+                </Border>
+                <Border Margin="30,0,0,10" BorderBrush="#FF171717" BorderThickness="10"  CornerRadius="8" Width="130" Height="66">
+                    <Button Style="{StaticResource NoHoverButton}" Content="10"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" Margin="0,0,0,0" />
+                </Border>
+                <Border Margin="0,0,0,10" BorderBrush="#FF171717" BorderThickness="10"  CornerRadius="8" Width="130" Height="66" >
+                    <Button Style="{StaticResource NoHoverButton}" Content="10"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" Margin="0,0,0,0" />
+                </Border>
+            </WrapPanel>-->
+            <!--<Border Margin="15,40" BorderBrush="#FF54B14D" BorderThickness="10" CornerRadius="8" Grid.Row="1">
                 <Button x:Name="startButton" Content="StartGame" Style="{StaticResource NoHoverButton}" Background="#FF54B14D" Foreground="#FFF1EDED" FontSize="24" FontFamily="Arial" FontWeight="Bold" BorderBrush="{x:Null}" BorderThickness="0,0,0,0" Click="StartGame" />
             </Border>-->
         </Grid>
+        <StackPanel Orientation="Horizontal">
+            <Image VerticalAlignment="Center" Height="50" Source="/images/bp.png"  Width="100"/>
+            <Label Content="Black Player" Foreground="#FFC3C3C3"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+            
+            <Border x:Name="BlackTimer" BorderBrush="#FF171717" Margin="0,0,-520,0" BorderThickness="10" HorizontalAlignment="Right" CornerRadius="8" Width="130" Height="66">
+                <Button Style="{StaticResource NoHoverButton}" Content="10:00"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" />
+            </Border>
+
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"  Grid.Row="2">
+            <Border  x:Name="WhiteTimer" BorderBrush="#FF171717" Margin="0,0,370,0" BorderThickness="10" HorizontalAlignment="Right" CornerRadius="8" Width="130" Height="66">
+                <Button Style="{StaticResource NoHoverButton}" Content="10:00"  Background="#FF171717" Foreground="#FFC3C3C3" FontSize="30" BorderBrush="{x:Null}" Click="displayTimeOptions" />
+            </Border>
+            <Image VerticalAlignment="Center" Height="50" Source="/images/wp.png"  Width="100"/>
+            <Label Content="White Player" Foreground="#FFC3C3C3"  FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+
+            
+
+        </StackPanel>
     </Grid>
 </Window>
