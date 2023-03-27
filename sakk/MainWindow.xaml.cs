@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,20 +39,17 @@ namespace sakk
         public static MainWindow _instance;
         public bool TimeExpanded = false;
         int? selectedTime = 10;
-        DispatcherTimer Blacktimer;
-        DispatcherTimer Whitetimer;
+        DispatcherTimer Timer = new DispatcherTimer();
 
 
 
 
         public MainWindow()
         {
-            Blacktimer = new DispatcherTimer();
-            Blacktimer.Interval = TimeSpan.FromSeconds(1);
-            Blacktimer.Tick += Timer_Tick;
-            Whitetimer = new DispatcherTimer();
-            Whitetimer.Interval = TimeSpan.FromSeconds(1);
-            Whitetimer.Tick += Timer_Tick;
+            
+            Timer.Interval = TimeSpan.FromSeconds(1);
+            Timer.Tick += Timer_Tick;
+            
             _instance = this;
             InitializeComponent();
 
@@ -62,6 +61,46 @@ namespace sakk
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
+            Button timer = (Button)(IsWhiteTurn? lbWhiteTimer.Child : lbBlackTimer.Child);
+            string[] time = timer.Content.ToString().Split(":");
+            int minutes = int.Parse(time[0]);
+            int seconds = int.Parse(time[1]);
+            if (seconds == 0)
+            {
+                if (minutes == 0)
+                {
+
+                    handleWin(!IsWhiteTurn);
+                    Timer.Stop();
+                    return;
+                }
+                else
+                {
+                    minutes--;
+                    seconds = 59;
+                }
+            }
+            else
+            {
+                seconds--;
+            }
+
+            timer.Content = minutes.ToString("00") + ":" + seconds.ToString("00");
+        }
+
+        private void handleWin(bool isWhiteWon)
+        {
+            
+            if (isWhiteWon)
+            {
+                MessageBox.Show("White won!");
+            }
+            else
+            {
+                MessageBox.Show("Black won!");
+            }
+
+
         }
 
         private void createMenu()
@@ -250,7 +289,7 @@ namespace sakk
             img.Source = board[to].ImageByIdx;
             board.selectedPiece = null;
             buttonGrid.Children.Add(img);
-
+            
 
             IsWhiteTurn = !IsWhiteTurn;
 
@@ -260,7 +299,8 @@ namespace sakk
             {
                 MessageBox.Show($"{((bool)board.IsMated ? "white" : "black")} sucks lol");
             }
-
+            
+           
             resetBoardColor();
 
         }
@@ -425,6 +465,7 @@ namespace sakk
         {
             gameInProgress = true;
             menuGrid.Children.Clear();
+            Timer.Start();
         }
 
         private void displayTimeOptions(object sender, RoutedEventArgs e)
@@ -486,17 +527,17 @@ namespace sakk
             mainButton.Tag = timeButton.Tag;
             selectedTime = (int?)timeButton.Tag;
            
-            if (timeButton.Tag == null) {
+            if (mainButton.Tag == null) {
                 mainButton.Content = timeButton.Content + "🠻";
-                WhiteTimer.Opacity = 0;
-                BlackTimer.Opacity = 0;
+                lbWhiteTimer.Opacity = 0;
+                lbBlackTimer.Opacity = 0;
             }
             else
             {
-                WhiteTimer.Opacity = 1;
-                BlackTimer.Opacity = 1;
-                ((Button)WhiteTimer.Child).Content = timeButton.Content+ ":00";
-                ((Button)BlackTimer.Child).Content = timeButton.Content+ ":00";
+                lbWhiteTimer.Opacity = 1;
+                lbBlackTimer.Opacity = 1;
+                ((Button)lbWhiteTimer.Child).Content = timeButton.Content+ ":00";
+                ((Button)lbBlackTimer.Child).Content = timeButton.Content+ ":00";
                 mainButton.Content = timeButton.Content + " perc 🠻";
             }
         }
