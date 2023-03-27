@@ -211,9 +211,9 @@ namespace sakk
 
             board[board.FindKingPoint(IsWhiteTurn)].GetMovesFinal(board);
 
-            if ((board.isMated == null) ? (false) : ((bool)board.isMated))
+            if ((board.IsMated == null) ? (false) : ((bool)board.IsMated))
             {
-                MessageBox.Show($"{((bool)board.isMated ? "white" : "black")} sucks lol");
+                MessageBox.Show($"{((bool)board.IsMated ? "white" : "black")} sucks lol");
             }
 
             resetBoardColor();

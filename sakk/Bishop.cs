@@ -36,9 +36,9 @@ namespace sakk
         public override List<Point> GetMovesAvailable(Board board)
         {
             List<Point> result = new List<Point>();
-            foreach (Point p in Board.QueenEndpoints(CurrentPosition!).Where(p => p.x != CurrentPosition!.x && p.y != CurrentPosition.y))
+            foreach (Point p in Board.QueenEndpoints(board, CurrentPosition!).Where(p => p.x != CurrentPosition!.x && p.y != CurrentPosition.y))
             {
-                result.AddRange(Board.DrawSection(CurrentPosition!, p));
+                result.AddRange(Board.DrawSection(board, CurrentPosition!, p));
             };
 
             return Utils.FilterPoints(result);
@@ -48,9 +48,9 @@ namespace sakk
         public override List<Point> GetMovesDefending(Board board)
         {
             List<Point> result = new List<Point>();
-            foreach (Point p in Board.QueenEndpoints(CurrentPosition!).Where(p => p.x != CurrentPosition!.x && p.y != CurrentPosition.y))
+            foreach (Point p in Board.QueenEndpoints(board, CurrentPosition!, ignoreColor: true).Where(p => p.x != CurrentPosition!.x && p.y != CurrentPosition.y))
             {
-                result.AddRange(Board.DrawSection(CurrentPosition!, p, forceInclusiveEnd: true));
+                result.AddRange(Board.DrawSection(board, CurrentPosition!, p, forceInclusiveEnd: true));
             };
 
             return Utils.FilterPoints(result);

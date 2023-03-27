@@ -37,11 +37,27 @@ namespace sakk
 
         public override List<Point> GetMovesAvailable(Board board)
         {
-            return GetMovesAll()
-                .Where(
-                    p => ((board[p] == null && !HasAttacker(board, p, IsWhite)) ||
-                        (board[p] != null && board[p].IsWhite != IsWhite && !board[p].HasDefender(board))
-                )).ToList();
+            List<Point> moves = new();
+
+            foreach (var p in GetMovesAll())
+            {
+                var currentPiece = board[p];
+                if (currentPiece == null)
+                {
+                    Board b = new(board.Pieces.Select(x => (x.CurrentPosition == CurrentPosition) ? (new King(p, IsWhite) { IsFirstMove = false }) : (x)).ToList(), false);
+                    if (!HasAttacker(b, p, IsWhite))
+                    {
+                        moves.Add(p);
+                    }
+                }
+                else if (currentPiece.IsWhite != IsWhite && !currentPiece.HasDefender(board))
+                {
+                    moves.Add(p);
+                }
+            }
+
+            return moves;
+
         }
 
         public override List<Point> GetMovesDefending(Board board)
