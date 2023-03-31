@@ -35,7 +35,7 @@
             <ColumnDefinition Width="10*"/>
             <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
-        <Grid Margin="10 , 0, 0 ,0" x:Name="chessBoard" Grid.Column="0" Grid.Row="1">
+        <Grid   Margin="10 , 0, 0 ,0" x:Name="chessBoard" Grid.Column="0" Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
