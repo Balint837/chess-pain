@@ -34,13 +34,16 @@ namespace sakk
         public List<Point> GetAttackers(Board board, Point point, bool? isWhite)
         {
 
-            return Board.QueenEndpoints(board, point)
+            return Board.QueenEndpoints(board, point, ignoreColor: true)
                 .Where(
-                    p => board[p] != null
-                    && (isWhite == null ? true : (board[p].IsWhite != (bool)isWhite))
-                    && (board[p] is Pawn ? (board[p]!
-                .GetMovesDefending(board).Any(x => x == CurrentPosition!)) : (board[p]!
-                .GetMovesAvailable(board).Any(x => x == CurrentPosition!))))
+                    ap => board[ap] != null
+                    && (isWhite == null ? true : (board[ap].IsWhite != (bool)isWhite))
+                    && (board[ap] is Pawn ?
+                        (board[ap]!
+                        .GetMovesDefending(board).Any(move => move == point!))
+                        :
+                        (board[ap] is King ? (board[ap]!.GetMovesAll(board).Any(move => move == point!)) : (board[ap]!
+                        .GetMovesAvailable(board).Any(move => move == point!)))))
                 .ToList();
         }
 
@@ -93,10 +96,32 @@ namespace sakk
         }
 
         public abstract List<Point> GetMovesDefending(Board board);
+
         public virtual List<Point> GetMovesPinned(Board board)
         {
             List<Point> kingLine = Board.DrawLane(CurrentPosition, board.FindKingPoint(IsWhite));
+            bool isObstructed = false;
+            bool runChecks = false;
+            foreach (var p in kingLine)
+            {
+                if (runChecks)
+                {
+                    if (board[p] != null)
+                    {
+                        isObstructed = board[p] is not King;
+                        break;
+                    }
+                }
+                else
+                {
+                    runChecks = p == CurrentPosition;
+                }
+            }
             var availableMoves = GetMovesAvailable(board);
+            if (isObstructed)
+            {
+                return availableMoves;
+            }
             foreach (Point attackerPoint in GetAttackers(board))
             {
                 var attackerMoves = board[attackerPoint]!.GetMovesAllSelfInclusive();
@@ -116,50 +141,14 @@ namespace sakk
         public virtual List<Point> GetMovesFinal(Board board)
         {
             var attackerPoints = GetAttackers(board, board.FindKingPoint(IsWhite), IsWhite);
-            if (this is not King)
+            switch (attackerPoints.Count)
             {
-                switch (attackerPoints.Count)
-                {
-                    case 0:
-                        return GetMovesPinned(board);
-                    case 1:
-                        return Utils.PointsAnd(GetMovesPinned(board), Board.DrawSection(board, board[attackerPoints[0]]!.CurrentPosition!, board.FindKingPoint(IsWhite), forceInclusiveStart: true));
-                    default:
-                        return new();
-                }
-            }
-            else
-            {
-                var result = GetMovesAvailable(board);
-                switch (attackerPoints.Count)
-                {
-                    case 0:
-                        return result;
-                    case 1:
-                        if (!result.Any())
-                        {
-                            bool foundHero = false;
-                            foreach (ChessPiece piece in board)
-                            {
-                                if (piece.IsWhite == IsWhite && piece is not King && piece.GetMovesFinal(board).Any())
-                                {
-                                    foundHero = true;
-                                    break;
-                                }
-                            }
-                            if (!foundHero)
-                            {
-                                board.IsMated = IsWhite;
-                            }
-                        }
-                        return result;
-                    default:
-                        if (!result.Any())
-                        {
-                            board.IsMated = IsWhite;
-                        }
-                        return result;
-                }
+                case 0:
+                    return GetMovesPinned(board);
+                case 1:
+                    return Utils.PointsAnd(GetMovesPinned(board), Board.DrawSection(board, board[attackerPoints[0]]!.CurrentPosition!, board.FindKingPoint(IsWhite), forceInclusiveStart: true));
+                default:
+                    return new();
             }
         }
 

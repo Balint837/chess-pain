@@ -25,10 +25,10 @@ namespace sakk
             return Pieces.Find(x => x is King && x.IsWhite == isWhite)!.CurrentPosition!;
         }
 
-        public static List<Point> QueenEndpoints(Board _this, Point p, bool inclusiveStart = false, bool ignoreColor = false)
+        public static List<Point> QueenEndpoints(Board board, Point p, bool inclusiveStart = false, bool ignoreColor = false)
         {
             List<Point> result = new();
-            ChessPiece? currentPiece = _this[p];
+            ChessPiece? currentPiece = board[p];
             for (int xp = -1; xp < 2; xp++)
             {
                 for (int yp = -1; yp < 2; yp++)
@@ -36,13 +36,13 @@ namespace sakk
                     if (xp == 0 && yp == 0) continue;
                     int x = p.x+xp;
                     int y = p.y+yp;
-                    while (_this[x,y] == null && x > -1 && x < 8 && y > -1 && y < 8)
+                    while (board[x,y] == null && x > -1 && x < 8 && y > -1 && y < 8)
                     {
                         x += xp;
                         y += yp;
                     }
                     bool forceEnter = false;
-                    if (_this[x,y] == null)
+                    if (board[x,y] == null)
                     {
                         forceEnter = true;
                         x -= xp;
@@ -57,7 +57,7 @@ namespace sakk
                     }
                     else
                     {
-                        if (ignoreColor || (currentPiece.IsWhite != _this[x, y]!.IsWhite))
+                        if (ignoreColor || (currentPiece.IsWhite != board[x, y]!.IsWhite))
                         {
                             result.Add(new Point(x, y));
                         }
@@ -79,7 +79,7 @@ namespace sakk
             }
             return Utils.FilterPoints(result);
         }
-        public static List<Point> KnightMoves(Board _this, Point p, bool? isWhite = null)
+        public static List<Point> KnightMoves(Board board, Point p, bool? isWhite = null)
         {
             List<Point> result = new List<Point>
             {
@@ -94,24 +94,17 @@ namespace sakk
             };
             if (isWhite != null)
             {
-                result = result.Where(x => _this[x] == null || (_this[x]!.IsWhite != isWhite)).ToList();
+                result = result.Where(x => board[x] == null || (board[x]!.IsWhite != isWhite)).ToList();
             }
-            else if (_this[p] != null)
+            else if (board[p] != null)
             {
-                result = result.Where(x => _this[x] == null || (_this[x]!.IsWhite != _this[p]!.IsWhite)).ToList();
+                result = result.Where(x => board[x] == null || (board[x]!.IsWhite != board[p]!.IsWhite)).ToList();
             }
             return Utils.FilterPoints(result);
         }
 
-        public static List<Point> DrawSection(Point p1, Point p2, bool forceInclusiveEnd = false, bool forceInclusiveStart = false, bool allowInvalid = false, bool? isWhite = null)
-        {
-            return DrawSection(MainWindow.board, p1, p2, forceInclusiveEnd, forceInclusiveStart, allowInvalid, isWhite);
-        }
-
-
         public static List<Point> DrawSection(Board board, Point p1, Point p2, bool forceInclusiveEnd = false, bool forceInclusiveStart = false, bool allowInvalid = false, bool? isWhite = null)
         {
-            var _this = board;
             List<Point> result = new();
 
             int xp = p1.x == p2.x ? 0 : (p1.x < p2.x ? 1 : -1);
@@ -126,7 +119,7 @@ namespace sakk
             int x = p1.x;
             int y = p1.y;
 
-            if (forceInclusiveStart || _this[x, y] == null)
+            if (forceInclusiveStart || board[x, y] == null)
             {
                 result.Add(new Point(x, y));
             }
@@ -139,7 +132,7 @@ namespace sakk
                 x += xp;
                 y += yp;
             }
-            if (forceInclusiveEnd || _this[p2] == null || (_this[p2] != null && _this[p1] != null && (isWhite == null ? (_this[p1]!.IsWhite != _this[p2]!.IsWhite) : (bool)isWhite)))
+            if (forceInclusiveEnd || board[p2] == null || (board[p2] != null && board[p1] != null && (isWhite == null ? (board[p1]!.IsWhite != board[p2]!.IsWhite) : (bool)isWhite)))
             {
                 result.Add(new Point(x, y));
             }
@@ -283,22 +276,27 @@ namespace sakk
         public Board()
         {
             SetDefaultChessPosition();
-
         }
 
         public Board(List<ChessPiece> startingPosition)
         {
-            Pieces = startingPosition;
+            Pieces = startingPosition.Where(x=> x!=null).ToList();
         }
 
         public Board(List<ChessPiece> startingPosition, bool isMain)
         {
-            Pieces = startingPosition;
+            Pieces = startingPosition.Where(x => x != null).ToList();
             IsMain = isMain;
         }
 
         public void SetDefaultChessPosition()
         {
+            //Pieces.Clear();
+            //Pieces.Add(new Knight(new Point(1, 2), true));
+            //Pieces.Add(new Bishop(new Point(4, 4), false));
+            //Pieces.Add(new King(new Point(1, 1), true));
+            //Pieces.Add(new King(new Point(7, 0), false));
+            //return;
 
             Pieces.Clear();
             for (int i = 0; i < 8; i++)
