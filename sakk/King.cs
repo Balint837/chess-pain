@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace sakk
 {
@@ -63,6 +64,41 @@ namespace sakk
         public override List<Point> GetMovesDefending(Board board)
         {
             return GetMovesAll();
+        }
+
+        public override List<Point> GetMovesFinal(Board board)
+        {
+            var attackerPoints = GetAttackers(board, board.FindKingPoint(IsWhite), IsWhite);
+            var result = GetMovesAvailable(board);
+            switch (attackerPoints.Count)
+            {
+                case 0:
+                    return result;
+                case 1:
+                    if (!result.Any())
+                    {
+                        bool foundHero = false;
+                        foreach (ChessPiece piece in board)
+                        {
+                            if (piece.IsWhite == IsWhite && piece is not King && piece.GetMovesFinal(board).Any())
+                            {
+                                foundHero = true;
+                                break;
+                            }
+                        }
+                        if (!foundHero)
+                        {
+                            board.IsMated = IsWhite;
+                        }
+                    }
+                    return result;
+                default:
+                    if (!result.Any())
+                    {
+                        board.IsMated = IsWhite;
+                    }
+                    return result;
+            }
         }
 
     }
