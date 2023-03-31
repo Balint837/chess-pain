@@ -73,6 +73,40 @@ namespace sakk
             switch (attackerPoints.Count)
             {
                 case 0:
+                    if (!IsFirstMove)
+                    {
+                        return result;
+                    }
+                    var row = IsWhite ? 7 : 0;
+                    var leftPiece = board[0, row];
+                    var rightPiece = board[7, row];
+                    if (leftPiece != null && leftPiece is Rook)
+                    {
+                        Rook leftRook = (Rook)leftPiece;
+                        if (leftRook.IsFirstMove)
+                        {
+                            var tp1 = new Point(3, row);
+                            var tp2 = new Point(2, row);
+                            var tp3 = new Point(1, row);
+                            if (result.Any(p => p == tp1) && board[tp2] == null && board[tp3] == null && !HasAttacker(board, tp2, IsWhite))
+                            {
+                                result.Add(tp2);
+                            }
+                        }
+                    }
+                    if (rightPiece != null && rightPiece is Rook)
+                    {
+                        Rook rightRook = (Rook)rightPiece;
+                        if (rightRook.IsFirstMove)
+                        {
+                            var tp1 = new Point(5, row);
+                            var tp2 = new Point(6, row);
+                            if (result.Any(p => p == tp1) && board[tp2] == null && !HasAttacker(board, tp2, IsWhite))
+                            {
+                                result.Add(tp2);
+                            }
+                        }
+                    }
                     return result;
                 case 1:
                     if (!result.Any())

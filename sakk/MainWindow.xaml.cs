@@ -263,9 +263,23 @@ namespace sakk
                     gameInProgress = false;
                 }
             }
-            else if (board[to] is King) { 
-                               ((King)board[to]).IsFirstMove = false;
-                       }
+            else if (board[to] is King) 
+            {
+                var tempPiece = (King)board[to];
+                if (Math.Abs(from.x - to.x) > 2 || Math.Abs(from.y - to.y) > 2)
+                {
+                    int row = tempPiece.IsWhite ? 7 : 0;
+                    if (to.x > 4)
+                    {
+                        MovePiece(new Point(7, row), new Point(5, row));
+                    }
+                    else
+                    {
+                        MovePiece(new Point(0, row), new Point(3, row));
+                    }
+                }
+                tempPiece.IsFirstMove = false;
+            }
             else if (board[to] is Rook) {
                                ((Rook)board[to]).IsFirstMove = false;
                        }
