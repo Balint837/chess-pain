@@ -34,13 +34,16 @@ namespace sakk
         public List<Point> GetAttackers(Board board, Point point, bool? isWhite)
         {
 
-            return Board.QueenEndpoints(board, point)
+            return Board.QueenEndpoints(board, point, ignoreColor: true)
                 .Where(
-                    p => board[p] != null
-                    && (isWhite == null ? true : (board[p].IsWhite != (bool)isWhite))
-                    && (board[p] is Pawn ? (board[p]!
-                .GetMovesDefending(board).Any(x => x == CurrentPosition!)) : (board[p]!
-                .GetMovesAvailable(board).Any(x => x == CurrentPosition!))))
+                    ap => board[ap] != null
+                    && (isWhite == null ? true : (board[ap].IsWhite != (bool)isWhite))
+                    && (board[ap] is Pawn ?
+                        (board[ap]!
+                        .GetMovesDefending(board).Any(move => move == point!))
+                        :
+                        (board[ap] is King ? (board[ap]!.GetMovesAll(board).Any(move => move == point!)) : (board[ap]!
+                        .GetMovesAvailable(board).Any(move => move == point!)))))
                 .ToList();
         }
 
@@ -93,6 +96,7 @@ namespace sakk
         }
 
         public abstract List<Point> GetMovesDefending(Board board);
+
         public virtual List<Point> GetMovesPinned(Board board)
         {
             List<Point> kingLine = Board.DrawLane(CurrentPosition, board.FindKingPoint(IsWhite));

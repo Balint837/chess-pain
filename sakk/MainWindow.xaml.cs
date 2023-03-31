@@ -71,7 +71,6 @@ namespace sakk
                 {
 
                     handleWin(!IsWhiteTurn);
-                    Timer.Stop();
                     return;
                 }
                 else
@@ -99,7 +98,7 @@ namespace sakk
             {
                 MessageBox.Show("Black won!");
             }
-
+            Timer.Stop();
 
         }
 

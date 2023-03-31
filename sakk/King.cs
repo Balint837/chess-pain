@@ -44,7 +44,7 @@ namespace sakk
                 var currentPiece = board[p];
                 if (currentPiece == null)
                 {
-                    Board b = new(board.Pieces.Select(x => (x.CurrentPosition == CurrentPosition) ? (new King(p, IsWhite) { IsFirstMove = false }) : (x)).ToList(), false);
+                    Board b = new(board.Pieces.Select(x => (x.CurrentPosition == CurrentPosition) ? (new King(p, IsWhite) { IsFirstMove = false }) : (x.CurrentPosition == p ? null : x)).ToList(), false);
                     if (!HasAttacker(b, p, IsWhite))
                     {
                         moves.Add(p);
