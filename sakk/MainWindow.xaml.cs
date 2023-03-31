@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -40,7 +41,7 @@ namespace sakk
         public bool TimeExpanded = false;
         int? selectedTime = 10;
         DispatcherTimer Timer = new DispatcherTimer();
-
+        Image dragDropImage;
 
 
 
@@ -174,6 +175,10 @@ namespace sakk
                     button.Click += Button_Click;
                     button.BorderThickness = new Thickness(0);
                     button.Style =  (Style)FindResource("NoHoverButton");
+                    button.AllowDrop = true;
+                    button.Drop += button_drop;
+                    
+
                     Grid.SetRow(button, i);
                     Grid.SetColumn(button, j);
                     button.Name = "button" + i + j;
@@ -186,6 +191,23 @@ namespace sakk
             }
             resetBoardColor();
             displayPieces();
+        }
+
+        private void button_drop(object sender, DragEventArgs e)
+        {
+            Grid btngrid = ((Button)sender).Content as Grid;
+            Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender));
+            
+            if (board.LegalMoves.Exists(x => x == p))
+            {
+
+                MovePiece(board.selectedPiece.CurrentPosition!, p);
+                removeRemovables();
+                ((Image)btngrid.Children[0]).MouseDown += drag_drop;
+            }
+            
+
+
         }
 
         private void resetBoardColor()
@@ -237,6 +259,7 @@ namespace sakk
                 Grid buttonGrid = button.Content as Grid;
                 
                 Image img = new Image();
+                img.MouseDown += drag_drop;
                 img.Source = piece.ImageByIdx;
                 buttonGrid.Children.Add(img);
 
@@ -405,7 +428,7 @@ namespace sakk
             {
                 return;
             }
-
+            
             removeRemovables();
             Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender) );
             if (board[p]!=null && board[p]!.IsWhite == IsWhiteTurn)
@@ -414,32 +437,9 @@ namespace sakk
                 board.selectedPiece = board[p]!;
 
                 resetBoardColor();
-                foreach (Point pa in board.selectedPiece.GetMovesFinal(board))
-                {
-                    board.LegalMoves.Add(pa);
-                    Grid buttonGrid =((Button)chessBoard.Children[pa.y * 8 + pa.x]).Content as Grid;
-                    Ellipse elipse = new();
-                    elipse.Stretch = Stretch.UniformToFill;
-                    
-                    elipse.Opacity = 0.7;
-                    elipse.Tag = "removable";
-                    if (buttonGrid.Children.Count > 0 || (board.selectedPiece is Pawn && board.selectedPiece.CurrentPosition.x != pa.x))
-                    {
-                        elipse.Stroke = Brushes.Gray;
-                        elipse.StrokeThickness = 7;
-                        Panel.SetZIndex(elipse, -1);
-
-
-                    }
-                    
-                    else
-                    {
-                        elipse.Fill = Brushes.Gray;
-                        elipse.Width = 33;
-                        elipse.Height = 33;
-                    }
-                    buttonGrid.Children.Add(elipse);
-                }
+                displayMoveOptions();
+                setupDragAndDrop(sender);
+                
             }
             else if(board.LegalMoves.Exists(x => x == p))
             {
@@ -448,6 +448,74 @@ namespace sakk
 
             }
             return;
+        }
+
+        private void setupDragAndDrop(object sender)
+        {
+            dragDropImage = (Image)((Grid)((ContentControl)sender).Content).Children[0];
+            
+             
+        }
+
+        private void drag_drop(object sender, MouseEventArgs e)
+        {
+            if (!gameInProgress )
+            {
+                return;
+            }
+            Button clickedButton = ((Grid)((Image)sender).Parent).Parent as Button;
+            Point p = new Point(Grid.GetColumn(clickedButton), Grid.GetRow(clickedButton));
+            if (IsWhiteTurn != board[p].IsWhite)
+            {
+                return;
+            }
+
+            board.LegalMoves.Clear();
+            board.selectedPiece = board[p]!;
+            displayMoveOptions();
+            Image img = (Image)sender;
+            DragDrop.DoDragDrop(img, img, DragDropEffects.Move);
+            
+
+                
+
+
+            
+
+
+
+        }
+        
+
+        private void displayMoveOptions()
+        {
+            removeRemovables();
+            foreach (Point pa in board.selectedPiece.GetMovesFinal(board))
+            {
+                board.LegalMoves.Add(pa);
+                Grid buttonGrid = ((Button)chessBoard.Children[pa.y * 8 + pa.x]).Content as Grid;
+                Ellipse elipse = new();
+                elipse.Stretch = Stretch.UniformToFill;
+
+                elipse.Opacity = 0.7;
+                elipse.Tag = "removable";
+                if (buttonGrid.Children.Count > 0 || (board.selectedPiece is Pawn && board.selectedPiece.CurrentPosition.x != pa.x))
+                {
+                    elipse.Stroke = Brushes.Gray;
+                    elipse.StrokeThickness = 7;
+                    Panel.SetZIndex(elipse, -1);
+
+
+                }
+
+                else
+                {
+                    elipse.Fill = Brushes.Gray;
+                    elipse.Width = 33;
+                    elipse.Height = 33;
+                }
+                buttonGrid.Children.Add(elipse);
+            }
         }
 
         public UIElement GetPieceByGridIdx(int row, int column)
