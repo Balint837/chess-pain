@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,29 @@ namespace sakk
 {
     public static class Utils
     {
+        public static Dictionary<string, object> ParseFEN(string fenString)
+        {
+            Dictionary<string, object> result = new();
+            var data = fenString.Split(" ");
+
+            Dictionary<char, Type> pieceDict = new()
+            {
+            };
+            var x = (x => x.GetType().GetConstructor(new Type[] { typeof(Point), typeof(bool) }).Invoke(null, new object[] { }));
+
+
+            result["pieces"] = new List<ChessPiece>();
+
+            foreach (var piece in data[0])
+            {
+
+            }
+
+            result["turn"] = data[1] == "w";
+
+            var castlingData = data[2];
+
+        }
         public static T? Cast<T>(T? obj)
         {
             return obj;
