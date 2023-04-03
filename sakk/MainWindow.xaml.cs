@@ -29,7 +29,7 @@ namespace sakk
     public partial class MainWindow : Window
     {
         WrapPanel wrapPanel = new WrapPanel();
-        int?[] timeOptions = { 1, 5, 10,30,null };
+        int?[] timeOptions = { 1, 5, 10, 30, null };
         public bool gameInProgress = false;
         List<ChessPiece> pieces = new();
         Border startButtonBorder = new Border();
@@ -47,10 +47,10 @@ namespace sakk
 
         public MainWindow()
         {
-            
+
             Timer.Interval = TimeSpan.FromSeconds(1);
             Timer.Tick += Timer_Tick;
-            
+
             _instance = this;
             InitializeComponent();
 
@@ -62,7 +62,7 @@ namespace sakk
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            Button timer = (Button)(IsWhiteTurn? lbWhiteTimer.Child : lbBlackTimer.Child);
+            Button timer = (Button)(IsWhiteTurn ? lbWhiteTimer.Child : lbBlackTimer.Child);
             string[] time = timer.Content.ToString().Split(":");
             int minutes = int.Parse(time[0]);
             int seconds = int.Parse(time[1]);
@@ -90,7 +90,7 @@ namespace sakk
 
         private void handleWin(bool isWhiteWon)
         {
-            
+
             if (isWhiteWon)
             {
                 MessageBox.Show("White won!");
@@ -105,8 +105,8 @@ namespace sakk
 
         private void createMenu()
         {
-            createStartButton();
-            createTimeButton();
+            createPassAndPlayButton();
+            createCustomPositionButton();
         }
 
         private void createTimeButton()
@@ -118,21 +118,108 @@ namespace sakk
             timeBorder.CornerRadius = new CornerRadius(8);
             timeBorder.SetValue(Grid.RowProperty, 0);
 
-            Button timeButton_Copy = new Button();
-            timeButton_Copy.Name = "timeButton_Copy";
-            timeButton_Copy.Style = (Style)FindResource("NoHoverButton");
-            timeButton_Copy.Content = "10 perc 🠻";
-            timeButton_Copy.Background = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
-            timeButton_Copy.Foreground = new SolidColorBrush(Color.FromRgb(0xc3, 0xc3, 0xc3));
-            timeButton_Copy.FontSize = 30;
-            timeButton_Copy.BorderBrush = null;
-            timeButton_Copy.Click += displayTimeOptions;
+            Button timeButton = new Button();
+            timeButton.Name = "timeButton";
+            timeButton.Style = (Style)FindResource("NoHoverButton");
+            timeButton.Content = "10 perc 🠻";
+            timeButton.Background = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
+            timeButton.Foreground = new SolidColorBrush(Color.FromRgb(0xc3, 0xc3, 0xc3));
+            timeButton.FontSize = 30;
+            timeButton.BorderBrush = null;
+            timeButton.Click += displayTimeOptions;
 
-            timeBorder.Child = timeButton_Copy;
+            timeBorder.Child = timeButton;
             menuGrid.Children.Add(timeBorder);
         }
 
-        private void createStartButton()
+        private void createPassAndPlayButton()
+        {
+            Border border = new Border();
+            border.Name = "PassAndPlayBorder";
+            border.Margin = new Thickness(20, 100, 20, 20);
+
+            border.SetValue(Grid.RowProperty, 0);
+
+            Button button = new Button();
+            button.Name = "PassAndPlayButton";
+            button.Content = "Pass and Play";
+            button.Click += createPassAndPlayMenu;
+            addBlackButtonStyles(button, border);
+            menuGrid.Children.Add(border);
+        }
+        private void createCustomPositionButton()
+        {
+            Border border = new Border();
+            border.Name = "CustomPositionBorder";
+            border.Margin = new Thickness(20, 20, 20, 100);
+            border.SetValue(Grid.RowProperty, 1);
+
+            Button button = new Button();
+            button.Name = "CustomPositionButton";
+            button.Content = "Custom Position";
+            button.Click += createCustomPositionMenu;
+            addBlackButtonStyles(button, border);
+            menuGrid.Children.Add(border);
+        }
+
+        private void createCustomPositionMenu(object sender, RoutedEventArgs e)
+        {
+            menuGrid.Children.Clear();
+            addPieceSelection();
+        }
+
+        private void addPieceSelection()
+        {
+            WrapPanel wrapPanelWhite = new WrapPanel();
+            wrapPanelWhite.Name = "WhitepieceSelection";
+            Grid.SetRow(wrapPanelWhite, 0);
+            WrapPanel wrapPanelBlack = new WrapPanel();
+            wrapPanelBlack.Name = "BlackpieceSelection";
+            Grid.SetRow(wrapPanelBlack, 1);
+            wrapPanelWhite.Margin = new Thickness(20, 20, 20, 0);
+            wrapPanelBlack.Margin = new Thickness(20, 20, 20, 0);
+            foreach (BitmapImage pieceImg in ChessPiece.bitmapImages)
+            {
+
+                Image img = new Image();
+                img.MouseDown += drag_drop;
+                img.Width = 70;
+                img.Source = pieceImg;
+                //MessageBox.Show($"{pieceImg.UriSource.ToString()[pieceImg.UriSource.ToString().Length-7]}");
+                if (pieceImg.UriSource.ToString()[pieceImg.UriSource.ToString().Length-6] == 'w')
+                {
+                    wrapPanelWhite.Children.Add(img);
+                }
+                else
+                {
+                    wrapPanelBlack.Children.Add(img);
+                }
+                
+            }
+            menuGrid.Children.Add(wrapPanelWhite);
+            menuGrid.Children.Add(wrapPanelBlack);
+        }
+
+        private void createPassAndPlayMenu(object sender, RoutedEventArgs e)
+        {
+            menuGrid.Children.Clear();
+            createStartButton();
+            createTimeButton();
+        }
+
+        private void addBlackButtonStyles(Button button, Border border) 
+            {
+            border.BorderBrush = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
+            border.BorderThickness = new Thickness(10);
+            border.CornerRadius = new CornerRadius(8);
+            button.Style = (Style)FindResource("NoHoverButton");
+            button.Background = new SolidColorBrush(Color.FromRgb(0x17, 0x17, 0x17));
+            button.Foreground = new SolidColorBrush(Color.FromRgb(0xc3, 0xc3, 0xc3));
+            button.FontSize = 30;
+            button.BorderBrush = null;
+            border.Child = button;
+        }
+            private void createStartButton()
         {
             
             startButtonBorder.Margin = new Thickness(15, 40, 15, 40);
@@ -202,7 +289,6 @@ namespace sakk
 
                 MovePiece(board.selectedPiece.CurrentPosition!, p);
                 removeRemovables();
-                ((Image)btngrid.Children[0]).MouseDown += drag_drop;
             }
             
 
@@ -324,10 +410,10 @@ namespace sakk
             Image img = new Image();
             
             img.Source = board[to].ImageByIdx;
+            
             board.selectedPiece = null;
             buttonGrid.Children.Add(img);
-            
-
+            img.MouseDown += drag_drop;
             IsWhiteTurn = !IsWhiteTurn;
 
             board[board.FindKingPoint(IsWhiteTurn)].GetMovesFinal(board);
@@ -459,7 +545,6 @@ namespace sakk
             {
 
                 MovePiece(board.selectedPiece.CurrentPosition!, p);
-
             }
             return;
         }
