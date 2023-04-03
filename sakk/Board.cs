@@ -17,8 +17,16 @@ namespace sakk
         public List<ChessPiece> Pieces = new List<ChessPiece>();
         public List<Point> LegalMoves = new List<Point>();
         public ChessPiece selectedPiece;
-        public bool? IsMated = null;
         public bool IsMain = true;
+        public List<Point> GetAvailablePieces(bool isWhite)
+        {
+            return Pieces.Where(p => p.IsWhite == isWhite && p.GetMovesFinal(this).Any()).Select(p => new Point(p.CurrentPosition.x, p.CurrentPosition.y)).ToList();
+        }
+
+        public List<Point> GetAvailablePieces()
+        {
+            return Pieces.Where(p => p.GetMovesFinal(this).Any()).Select(p => new Point(p.CurrentPosition.x, p.CurrentPosition.y)).ToList();
+        }
 
         public Point FindKingPoint(bool isWhite)
         {
@@ -292,14 +300,14 @@ namespace sakk
         public void SetDefaultChessPosition()
         {
 
-            Pieces.Clear();
-            Pieces.Add(new Rook(new Point(7, 7), true));
-            Pieces.Add(new Rook(new Point(0, 7), true));
-            Pieces.Add(new Rook(new Point(7, 0), false));
-            Pieces.Add(new Rook(new Point(0, 0), false));
-            Pieces.Add(new King(new Point(4, 7), true));
-            Pieces.Add(new King(new Point(4, 0), false));
-            return;
+            //Pieces.Clear();
+            //Pieces.Add(new Rook(new Point(7, 7), true));
+            //Pieces.Add(new Rook(new Point(0, 7), true));
+            //Pieces.Add(new Rook(new Point(7, 0), false));
+            //Pieces.Add(new Rook(new Point(0, 0), false));
+            //Pieces.Add(new King(new Point(4, 7), true));
+            //Pieces.Add(new King(new Point(4, 0), false));
+            //return;
 
             Pieces.Clear();
             for (int i = 0; i < 8; i++)

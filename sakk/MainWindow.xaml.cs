@@ -88,16 +88,20 @@ namespace sakk
             timer.Content = minutes.ToString("00") + ":" + seconds.ToString("00");
         }
 
-        private void handleWin(bool isWhiteWon)
+        private void handleWin(bool? isWhiteWon)
         {
             
-            if (isWhiteWon)
+            if (isWhiteWon is true)
             {
                 MessageBox.Show("White won!");
             }
-            else
+            else if (isWhiteWon is false)
             {
                 MessageBox.Show("Black won!");
+            }
+            else
+            {
+                MessageBox.Show("Draw!");
             }
             Timer.Stop();
 
@@ -327,16 +331,19 @@ namespace sakk
             board.selectedPiece = null;
             buttonGrid.Children.Add(img);
             
-
             IsWhiteTurn = !IsWhiteTurn;
 
-            board[board.FindKingPoint(IsWhiteTurn)].GetMovesFinal(board);
-
-            if ((board.IsMated == null) ? (false) : ((bool)board.IsMated))
+            if (!board.GetAvailablePieces(IsWhiteTurn).Any())
             {
-                MessageBox.Show($"{((bool)board.IsMated ? "white" : "black")} sucks lol");
-            }
-            
+                if (board[board.FindKingPoint(IsWhiteTurn)].HasAttacker(board))
+                {
+                    handleWin(!IsWhiteTurn);
+                }
+                else
+                {
+                    handleWin(null);
+                }
+            };
            
             resetBoardColor();
 

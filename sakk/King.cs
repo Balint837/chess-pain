@@ -109,29 +109,7 @@ namespace sakk
                         }
                     }
                     return result;
-                case 1:
-                    if (!result.Any())
-                    {
-                        bool foundHero = false;
-                        foreach (ChessPiece piece in board)
-                        {
-                            if (piece.IsWhite == IsWhite && piece is not King && piece.GetMovesFinal(board).Any())
-                            {
-                                foundHero = true;
-                                break;
-                            }
-                        }
-                        if (!foundHero)
-                        {
-                            board.IsMated = IsWhite;
-                        }
-                    }
-                    return result;
                 default:
-                    if (!result.Any())
-                    {
-                        board.IsMated = IsWhite;
-                    }
                     return result;
             }
         }
