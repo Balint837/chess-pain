@@ -289,7 +289,7 @@ namespace sakk
             else if (board[to] is King) 
             {
                 var tempPiece = (King)board[to];
-                if (Math.Abs(from.x - to.x) > 2 || Math.Abs(from.y - to.y) > 2)
+                if (Math.Abs(from.x - to.x) > 1)
                 {
                     int row = tempPiece.IsWhite ? 7 : 0;
                     if (to.x > 4)
@@ -300,6 +300,7 @@ namespace sakk
                     {
                         MovePiece(new Point(0, row), new Point(3, row));
                     }
+                    IsWhiteTurn ^= true;
                 }
                 tempPiece.IsFirstMove = false;
             }

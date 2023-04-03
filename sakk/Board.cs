@@ -291,12 +291,15 @@ namespace sakk
 
         public void SetDefaultChessPosition()
         {
-            //Pieces.Clear();
-            //Pieces.Add(new Knight(new Point(1, 2), true));
-            //Pieces.Add(new Bishop(new Point(4, 4), false));
-            //Pieces.Add(new King(new Point(1, 1), true));
-            //Pieces.Add(new King(new Point(7, 0), false));
-            //return;
+
+            Pieces.Clear();
+            Pieces.Add(new Rook(new Point(7, 7), true));
+            Pieces.Add(new Rook(new Point(0, 7), true));
+            Pieces.Add(new Rook(new Point(7, 0), false));
+            Pieces.Add(new Rook(new Point(0, 0), false));
+            Pieces.Add(new King(new Point(4, 7), true));
+            Pieces.Add(new King(new Point(4, 0), false));
+            return;
 
             Pieces.Clear();
             for (int i = 0; i < 8; i++)
