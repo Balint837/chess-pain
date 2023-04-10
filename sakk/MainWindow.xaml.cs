@@ -66,11 +66,16 @@ namespace sakk
             string[] time = timer.Content.ToString().Split(":");
             int minutes = int.Parse(time[0]);
             int seconds = int.Parse(time[1]);
+            
             if (seconds == 0)
             {
                 if (minutes == 0)
                 {
-
+                    if(isInsufficientMaterial(IsWhiteTurn))
+                    {
+                        handleWin(null);
+                        return;
+                    }
                     handleWin(!IsWhiteTurn);
                     return;
                 }
@@ -84,10 +89,27 @@ namespace sakk
             {
                 seconds--;
             }
-
             timer.Content = minutes.ToString("00") + ":" + seconds.ToString("00");
+
         }
 
+        private bool isInsufficientMaterial(bool white)
+        {
+            bool isInsufficient = board.Pieces.Find(
+                        x => x.IsWhite = white &&
+                        (x.GetType() == typeof(Rook)
+                        || x.GetType() == typeof(Pawn)
+                        || x.GetType() == typeof(Queen)
+                        )) == null;
+            if (!isInsufficient)
+            {
+                return false;
+            }
+            return board.Pieces.FindAll(x => x.IsWhite = white &&(x.GetType() == typeof(Knight)|| x.GetType() == typeof(Bishop))).Count <2;
+            
+        }
+
+        
         private void handleWin(bool? isWhiteWon)
         {
 
@@ -105,6 +127,7 @@ namespace sakk
             {
                 MessageBox.Show("Draw!");
             }
+            
             Timer.Stop();
             gameInProgress = false;
 
@@ -214,6 +237,7 @@ namespace sakk
         {
             // Create the grid
             Grid grid = new Grid();
+            grid.Name = "CastlingControlsGrid";
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
             grid.RowDefinitions.Add(new RowDefinition());
@@ -257,6 +281,7 @@ namespace sakk
             whiteCheckBox1.Margin = new Thickness(50, 0, 50, 0);
             whiteCheckBox1.Content = "0-0";
             whiteCheckBox1.Tag = "white";
+            whiteCheckBox1.Name = "whiteCheckBox1";
             whiteCheckBox1.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             whiteCheckBox1.VerticalAlignment = System.Windows.VerticalAlignment.Center;
             whiteCheckBox1.Foreground = Brushes.White;
@@ -269,6 +294,7 @@ namespace sakk
             whiteCheckBox2.FontSize = 15;
             whiteCheckBox2.Content = "0-0-0";
             whiteCheckBox2.Tag = "white";
+            whiteCheckBox2.Name = "whiteCheckBox2";
             whiteCheckBox2.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             whiteCheckBox2.VerticalAlignment = System.Windows.VerticalAlignment.Center;
             whiteCheckBox2.Foreground = Brushes.White;
@@ -292,6 +318,7 @@ namespace sakk
             blackCheckBox1.Margin = new Thickness(50, 0, 50, 0);
             blackCheckBox1.Content = "0-0";
             blackCheckBox1.Tag = "black";
+            blackCheckBox1.Name = "blackCheckBox1";
             blackCheckBox1.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             blackCheckBox1.VerticalAlignment = System.Windows.VerticalAlignment.Center;
             blackCheckBox1.Foreground = Brushes.White;
@@ -304,6 +331,7 @@ namespace sakk
             blackCheckBox2.FontSize = 15;
             blackCheckBox2.Content = "0-0-0";
                 blackCheckBox2.Tag = "black";
+            blackCheckBox2.Name = "blackCheckBox2";
             blackCheckBox2.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             blackCheckBox2.VerticalAlignment = System.Windows.VerticalAlignment.Center;
             blackCheckBox2.Foreground = Brushes.White;
@@ -354,7 +382,11 @@ namespace sakk
                 int row = checkBox.Tag.ToString() == "white" ? 7 : 0;
                 int col = checkBox.Content.ToString() == "0-0" ? 7 : 0;
                 ChessPiece piece = board[col,row];
-                
+                if (piece == null)
+                {
+                    checkBox.IsChecked = false;
+                    return;
+                }
                 if (piece.GetType() == typeof(Rook))
                 {
                     Rook rook = (Rook)piece;
@@ -496,13 +528,32 @@ namespace sakk
             if (isPositionSetup)
             {
                 Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender));
+                ChessPiece piece = board[p];
+                if (piece == null)
+                {
+                    return;
+                }
+                updateCheckboxes(piece);
                 board.Remove(p);
                 displayPieces();
             }
             
         }
 
-       
+        private void updateCheckboxes(ChessPiece piece)
+        {
+            if ( piece == null || !(piece.GetType() == typeof(Rook) && ((Rook)piece).IsFirstMove == true))
+            {
+                return;
+            }
+            
+                Rook rook = (Rook)piece;
+                Grid cbGrid = (menuGrid.Children[2] as Grid);
+                StackPanel wp = cbGrid.Children[rook.IsWhite ? 1 : 2] as StackPanel;
+                CheckBox cb = wp.Children[rook.CurrentPosition.x == 0 ? 1 : 2] as CheckBox;
+                cb.IsChecked = false;
+
+        }
 
         private void button_drop(object sender, DragEventArgs e)
         {
@@ -846,7 +897,15 @@ namespace sakk
 
         private void relocatePiece(Point from, Point to)
         {
-           
+
+            if (board[from] == null)
+            {
+                return;
+            }
+            updateCheckboxes(board[to]);
+            updateCheckboxes(board[from]);
+
+
             board[to] = board[from];
             board.selectedPiece.CurrentPosition = to;
             Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
@@ -930,7 +989,7 @@ namespace sakk
                         board.selectedPiece = new Pawn(p, color);
                         break;
                     case 'r':
-                        board.selectedPiece = new Rook(p, color);
+                        board.selectedPiece = new Rook(p, color, false);
                         break;
                     default:
                         board.selectedPiece = new Bishop(p, color);
