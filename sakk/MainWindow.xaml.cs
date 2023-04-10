@@ -36,13 +36,13 @@ namespace sakk
         public static Board board = new();
         Border timeBorder = new Border();
         public bool IsWhiteTurn = true;
-
+        bool isPositionSetup = false;
         public static MainWindow _instance;
         public bool TimeExpanded = false;
         int? selectedTime = 10;
         DispatcherTimer Timer = new DispatcherTimer();
         Image dragDropImage;
-
+        bool create = true;
 
 
         public MainWindow()
@@ -91,7 +91,7 @@ namespace sakk
         private void handleWin(bool? isWhiteWon)
         {
 
-            if (isWhiteWon)
+            //if (isWhiteWon)
             
             if (isWhiteWon is true)
             {
@@ -106,6 +106,7 @@ namespace sakk
                 MessageBox.Show("Draw!");
             }
             Timer.Stop();
+            gameInProgress = false;
 
         }
 
@@ -153,6 +154,37 @@ namespace sakk
             addBlackButtonStyles(button, border);
             menuGrid.Children.Add(border);
         }
+        private void createPassAndPlayButton(string content, int rowProperty)
+        {
+            Border border = new Border();
+            border.Name = "PassAndPlayBorder";
+            border.Margin = new Thickness(20, 100, 20, 20);
+
+            border.SetValue(Grid.RowProperty, rowProperty);
+
+            Button button = new Button();
+            button.Name = "PassAndPlayButton";
+            button.Content = content;
+            button.Click += conditionalPassAndPlayMenu;
+            addBlackButtonStyles(button, border);
+            menuGrid.Children.Add(border);
+        }
+
+        private void conditionalPassAndPlayMenu(object sender, RoutedEventArgs e)
+        {
+            if (board.isLegalPosition(IsWhiteTurn))
+            {
+                createPassAndPlayMenu(sender, e);
+
+            }
+            else {
+                MessageBox.Show("Illegal position!");
+            }
+
+
+            
+        }
+
         private void createCustomPositionButton()
         {
             Border border = new Border();
@@ -170,8 +202,176 @@ namespace sakk
 
         private void createCustomPositionMenu(object sender, RoutedEventArgs e)
         {
+            isPositionSetup = true;
             menuGrid.Children.Clear();
             addPieceSelection();
+            createControlsPanel();
+            createPassAndPlayButton("Start Game", 3);
+            
+        }
+
+        private void createControlsPanel()
+        {
+            // Create the grid
+            Grid grid = new Grid();
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            Grid.SetRow(grid, 2);
+
+            // Create the radio buttons
+            RadioButton blackRadioButton = new RadioButton();
+            blackRadioButton.Margin = new Thickness(10, 0, 0, 0);
+            blackRadioButton.FontSize = 15;
+            blackRadioButton.Content = "Black to play";
+            blackRadioButton.Foreground = Brushes.White;
+            blackRadioButton.Height = 40;
+            blackRadioButton.Width = 130;
+            blackRadioButton.GroupName = "CurrentPlayer";
+            Grid.SetRow(blackRadioButton, 0);
+            blackRadioButton.Click += changeCurrentPlayer;
+
+            RadioButton whiteRadioButton = new RadioButton();
+            whiteRadioButton.FontSize = 15;
+            whiteRadioButton.Content = "White to play";
+            whiteRadioButton.Foreground = Brushes.White;
+            whiteRadioButton.Height = 40;
+            whiteRadioButton.Width = 140;
+            whiteRadioButton.GroupName = "CurrentPlayer";
+            whiteRadioButton.IsChecked = true;
+            Grid.SetRow(whiteRadioButton, 0);
+            Grid.SetColumn(whiteRadioButton, 1);
+            whiteRadioButton.Click += changeCurrentPlayer;
+
+            // Create the checkbox for White
+            Label whiteLabel = new Label();
+            whiteLabel.FontSize = 15;
+            whiteLabel.Margin = new Thickness(10, 0, 0, 0);
+            whiteLabel.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            whiteLabel.Content = "White:";
+            whiteLabel.Foreground = Brushes.White;
+            Grid.SetRow(whiteLabel, 1);
+
+            CheckBox whiteCheckBox1 = new CheckBox();
+            whiteCheckBox1.FontSize = 15;
+            whiteCheckBox1.Margin = new Thickness(50, 0, 50, 0);
+            whiteCheckBox1.Content = "0-0";
+            whiteCheckBox1.Tag = "white";
+            whiteCheckBox1.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            whiteCheckBox1.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            whiteCheckBox1.Foreground = Brushes.White;
+            Grid.SetRow(whiteCheckBox1, 1);
+            Grid.SetColumn(whiteCheckBox1, 1);
+            whiteCheckBox1.Click += changeCastlingRights;
+            whiteCheckBox1.IsChecked = true;
+
+            CheckBox whiteCheckBox2 = new CheckBox();
+            whiteCheckBox2.FontSize = 15;
+            whiteCheckBox2.Content = "0-0-0";
+            whiteCheckBox2.Tag = "white";
+            whiteCheckBox2.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            whiteCheckBox2.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            whiteCheckBox2.Foreground = Brushes.White;
+            Grid.SetRow(whiteCheckBox2, 1);
+            Grid.SetColumn(whiteCheckBox2, 2);
+            whiteCheckBox2.Click += changeCastlingRights;
+            whiteCheckBox2.IsChecked = true;
+            
+
+            // Create the checkbox for Black
+            Label blackLabel = new Label();
+            blackLabel.FontSize = 15;
+            blackLabel.Margin = new Thickness(10, 0, 0, 0);
+            blackLabel.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            blackLabel.Content = "Black:";
+            blackLabel.Foreground = Brushes.White;
+            Grid.SetRow(blackLabel, 2);
+
+            CheckBox blackCheckBox1 = new CheckBox();
+            blackCheckBox1.FontSize = 15;
+            blackCheckBox1.Margin = new Thickness(50, 0, 50, 0);
+            blackCheckBox1.Content = "0-0";
+            blackCheckBox1.Tag = "black";
+            blackCheckBox1.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            blackCheckBox1.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            blackCheckBox1.Foreground = Brushes.White;
+            Grid.SetRow(blackCheckBox1, 2);
+            Grid.SetColumn(blackCheckBox1, 1);
+            blackCheckBox1.Click += changeCastlingRights;
+            blackCheckBox1.IsChecked = true;
+
+            CheckBox blackCheckBox2 = new CheckBox();
+            blackCheckBox2.FontSize = 15;
+            blackCheckBox2.Content = "0-0-0";
+                blackCheckBox2.Tag = "black";
+            blackCheckBox2.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            blackCheckBox2.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            blackCheckBox2.Foreground = Brushes.White;
+            Grid.SetRow(blackCheckBox2, 2);
+            Grid.SetColumn(blackCheckBox2, 2);
+            blackCheckBox2.Click += changeCastlingRights;
+            blackCheckBox2.IsChecked = true;
+            
+
+            //adding each of this to separate stack panels
+            StackPanel stackPanel1 = new StackPanel();
+            stackPanel1.Orientation = Orientation.Horizontal;
+            Grid.SetRow(stackPanel1, 0);
+            stackPanel1.Children.Add(blackRadioButton);
+            stackPanel1.Children.Add(whiteRadioButton);
+
+
+            StackPanel stackPanel2 = new StackPanel();
+            stackPanel2.Orientation = Orientation.Horizontal;
+            Grid.SetRow(stackPanel2, 1);
+            stackPanel2.Children.Add(whiteLabel);
+            stackPanel2.Children.Add(whiteCheckBox1);
+            stackPanel2.Children.Add(whiteCheckBox2);
+
+            StackPanel stackPanel3 = new StackPanel();
+            stackPanel3.Orientation = Orientation.Horizontal;
+            Grid.SetRow(stackPanel3, 2);
+            stackPanel3.Children.Add(blackLabel);
+            stackPanel3.Children.Add(blackCheckBox1);
+                stackPanel3.Children.Add(blackCheckBox2);
+
+            
+            grid.Children.Add(stackPanel1);
+            grid.Children.Add(stackPanel2);
+            grid.Children.Add(stackPanel3);
+
+
+
+
+            menuGrid.Children.Add(grid);
+        }
+
+        private void changeCastlingRights(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox)
+            {
+                CheckBox checkBox = sender as CheckBox;
+                int row = checkBox.Tag.ToString() == "white" ? 7 : 0;
+                int col = checkBox.Content.ToString() == "0-0" ? 7 : 0;
+                ChessPiece piece = board[col,row];
+                
+                if (piece.GetType() == typeof(Rook))
+                {
+                    Rook rook = (Rook)piece;
+                    rook.IsFirstMove = checkBox.IsChecked == true;
+                }
+                
+            }
+        }
+
+        private void changeCurrentPlayer(object sender, RoutedEventArgs e)
+        {
+            if (sender is RadioButton)
+            {
+                RadioButton radioButton = sender as RadioButton;
+                IsWhiteTurn = radioButton.Content.ToString() != "Black to play";
+                
+            }
         }
 
         private void addPieceSelection()
@@ -184,6 +384,7 @@ namespace sakk
             Grid.SetRow(wrapPanelBlack, 1);
             wrapPanelWhite.Margin = new Thickness(20, 20, 20, 0);
             wrapPanelBlack.Margin = new Thickness(20, 20, 20, 0);
+            
             foreach (BitmapImage pieceImg in ChessPiece.bitmapImages)
             {
 
@@ -192,7 +393,9 @@ namespace sakk
                 img.Width = 70;
                 img.Source = pieceImg;
                 //MessageBox.Show($"{pieceImg.UriSource.ToString()[pieceImg.UriSource.ToString().Length-7]}");
-                if (pieceImg.UriSource.ToString()[pieceImg.UriSource.ToString().Length-6] == 'w')
+                
+                img.Tag = "create";
+                if (pieceImg.UriSource.ToString()[pieceImg.UriSource.ToString().Length - 6] == 'w')
                 {
                     wrapPanelWhite.Children.Add(img);
                 }
@@ -208,6 +411,7 @@ namespace sakk
 
         private void createPassAndPlayMenu(object sender, RoutedEventArgs e)
         {
+            
             menuGrid.Children.Clear();
             createStartButton();
             createTimeButton();
@@ -265,6 +469,7 @@ namespace sakk
                     Button button = new Button();
                     button.Padding = new Thickness(7);
                     button.Click += Button_Click;
+                    button.MouseRightButtonDown += Button_MouseRightButtonDown;
                     button.BorderThickness = new Thickness(0);
                     button.Style =  (Style)FindResource("NoHoverButton");
                     button.AllowDrop = true;
@@ -285,19 +490,60 @@ namespace sakk
             displayPieces();
         }
 
+        private void Button_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            
+            if (isPositionSetup)
+            {
+                Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender));
+                board.Remove(p);
+                displayPieces();
+            }
+            
+        }
+
+       
+
         private void button_drop(object sender, DragEventArgs e)
         {
             Grid btngrid = ((Button)sender).Content as Grid;
             Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender));
-            
+
             if (board.LegalMoves.Exists(x => x == p))
             {
 
                 MovePiece(board.selectedPiece.CurrentPosition!, p);
                 removeRemovables();
             }
+            else if (isPositionSetup) {
+                if (create)
+                {
+                    createPiece(p);
+                }
+                else
+                {
+                    relocatePiece(board.selectedPiece.CurrentPosition!, p);
+                }
+               
+            
+            }
             
 
+
+        }
+
+        private void createPiece(Point to)
+        {
+            if(board.selectedPiece == null)
+            {
+                return;
+            }
+            Type type = board.selectedPiece.GetType();
+            ChessPiece piece = (ChessPiece)Activator.CreateInstance(type, to, board.selectedPiece.IsWhite);
+            
+            board[to] = piece;
+            
+            displayPieces();
 
         }
 
@@ -348,18 +594,32 @@ namespace sakk
             {
                 Button button = (Button)chessBoard.Children[piece.CurrentPosition.y * 8 + piece.CurrentPosition.x];
                 Grid buttonGrid = button.Content as Grid;
-                
+                buttonGrid.Children.Clear();
                 Image img = new Image();
                 img.MouseDown += drag_drop;
                 img.Source = piece.ImageByIdx;
                 buttonGrid.Children.Add(img);
-
+                string source = (img.Source as BitmapImage).UriSource.ToString();
+                
+                img.Tag = "move";
 
             }
         }
 
         private void MovePiece(Point from, Point to) {
             board[to] = board[from];
+            if (board.Pieces.FindAll(x => x is King).Count < 2)
+            {
+                if (board.Pieces.FindAll(x => x is King).Count == 0)
+                {
+                    handleWin(null);
+                }
+                else
+                {
+                    handleWin(board.Pieces.Find(x => x is King).IsWhite);
+                }
+                return;
+            }
             if (board[to] is Pawn) {
                 var tempPiece = (Pawn)board[to];
                 if (tempPiece.IsFirstMove)
@@ -417,6 +677,7 @@ namespace sakk
             
             img.Source = board[to].ImageByIdx;
             
+            img.Tag = "move";
             board.selectedPiece = null;
             buttonGrid.Children.Add(img);
             img.MouseDown += drag_drop;
@@ -435,6 +696,8 @@ namespace sakk
                 }
             };
            
+            
+
             resetBoardColor();
 
         }
@@ -526,6 +789,8 @@ namespace sakk
             btnGrid.Children.Clear();
             Image img = new Image();
             img.Source = newPiece.ImageByIdx;
+            
+            img.Tag = "move";
             btnGrid.Children.Add(img);
             gameInProgress = true;
 
@@ -535,29 +800,72 @@ namespace sakk
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            if (!gameInProgress)
+            if (gameInProgress)
             {
-                return;
+                removeRemovables();
+                Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender));
+                if (board[p] != null && board[p]!.IsWhite == IsWhiteTurn)
+                {
+                    board.LegalMoves.Clear();
+                    board.selectedPiece = board[p]!;
+
+                    resetBoardColor();
+                    displayMoveOptions();
+                    setupDragAndDrop(sender);
+
+                }
+                else if (board.LegalMoves.Exists(x => x == p))
+                {
+
+                    MovePiece(board.selectedPiece.CurrentPosition!, p);
+                }
             }
             
-            removeRemovables();
-            Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender) );
-            if (board[p]!=null && board[p]!.IsWhite == IsWhiteTurn)
-            {
-                board.LegalMoves.Clear();
-                board.selectedPiece = board[p]!;
+            else if (isPositionSetup) {
+                Point p = new Point(Grid.GetColumn((Button)sender), Grid.GetRow((Button)sender));
+                if (create)
+                {
+                    
+                    createPiece(p);
+                }
+                else
+                {
+                    
+                        relocatePiece(board.selectedPiece.CurrentPosition, p);
+                    
+                    
+                    
+                }
 
-                resetBoardColor();
-                displayMoveOptions();
-                setupDragAndDrop(sender);
-                
             }
-            else if(board.LegalMoves.Exists(x => x == p))
-            {
+            
 
-                MovePiece(board.selectedPiece.CurrentPosition!, p);
-            }
-            return;
+
+
+        }
+
+        private void relocatePiece(Point from, Point to)
+        {
+           
+            board[to] = board[from];
+            board.selectedPiece.CurrentPosition = to;
+            Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
+            Grid buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            button = (Button)chessBoard.Children[to.y * 8 + to.x];
+            buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            Image img = new Image();
+
+            img.Source = board[to].ImageByIdx;
+
+            img.Tag = "move";
+            buttonGrid.Children.Add(img);
+            img.MouseDown += drag_drop;
+
+            
+
+            resetBoardColor();
         }
 
         private void setupDragAndDrop(object sender)
@@ -569,22 +877,70 @@ namespace sakk
 
         private void drag_drop(object sender, MouseEventArgs e)
         {
-            if (!gameInProgress )
+            if (gameInProgress)
             {
-                return;
-            }
-            Button clickedButton = ((Grid)((Image)sender).Parent).Parent as Button;
-            Point p = new Point(Grid.GetColumn(clickedButton), Grid.GetRow(clickedButton));
-            if (IsWhiteTurn != board[p].IsWhite)
-            {
-                return;
-            }
+                Button clickedButton = ((Grid)((Image)sender).Parent).Parent as Button;
+                Point p = new Point(Grid.GetColumn(clickedButton), Grid.GetRow(clickedButton));
+                if (IsWhiteTurn != board[p].IsWhite)
+                {
+                    return;
+                }
 
-            board.LegalMoves.Clear();
-            board.selectedPiece = board[p]!;
-            displayMoveOptions();
-            Image img = (Image)sender;
-            DragDrop.DoDragDrop(img, img, DragDropEffects.Move);
+                board.LegalMoves.Clear();
+                board.selectedPiece = board[p]!;
+                displayMoveOptions();
+                Image img = (Image)sender;
+                DragDrop.DoDragDrop(img, img, DragDropEffects.Move);
+            }
+            else if (isPositionSetup) {
+                Image img = (Image)sender;
+                if (e.RightButton == MouseButtonState.Pressed)
+                {
+                    return;
+                }
+
+                create = img.Tag.ToString() == "create";
+                Point p = new Point(-1, -1) ;
+                if (!create)
+                {
+                    Button clickedButton = ((Grid)((Image)sender).Parent).Parent as Button;
+                    p = new Point(Grid.GetColumn(clickedButton), Grid.GetRow(clickedButton));
+                }
+                
+                string source = (img.Source as BitmapImage).UriSource.ToString();
+                bool color = source[source.Length-6] == 'w';
+                char type = source[source.Length - 5];
+                
+
+                switch (type)
+                {
+                    case 'b':
+                        board.selectedPiece = new Bishop(p, color);
+                        break;
+                    case 'n':
+                        board.selectedPiece = new Knight(p, color);
+                        break;
+                    case 'k':
+                        board.selectedPiece = new King(p, color);
+                        break;
+                    case 'q':
+                        board.selectedPiece = new Queen(p, color);
+                        break;
+                    case 'p':
+                        board.selectedPiece = new Pawn(p, color);
+                        break;
+                    case 'r':
+                        board.selectedPiece = new Rook(p, color);
+                        break;
+                    default:
+                        board.selectedPiece = new Bishop(p, color);
+                        break;
+
+                }
+                DragDrop.DoDragDrop(img, img, DragDropEffects.Move);
+
+            }
+            
             
 
                 
@@ -642,6 +998,8 @@ namespace sakk
         private void StartGame(object sender, RoutedEventArgs e)
         {
             gameInProgress = true;
+            isPositionSetup = false;
+            create = false;
             menuGrid.Children.Clear();
             Timer.Start();
         }
@@ -719,6 +1077,8 @@ namespace sakk
                 mainButton.Content = timeButton.Content + " perc 🠻";
             }
         }
+
+        
     }
     
 }

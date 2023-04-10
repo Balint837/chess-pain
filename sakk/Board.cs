@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Media.TextFormatting;
@@ -332,7 +334,39 @@ namespace sakk
             Pieces.Add(new Queen(new Point(3, 7), true));
             Pieces.Add(new Queen(new Point(3, 0), false));
         }
-            
+
+        internal bool isLegalPosition(bool isWhiteTurn)
+        {
+            if(Pieces.FindAll(x => x is King).Count < 2)
+            { 
+
+                return false;
+            }
+            if (this[FindKingPoint(!isWhiteTurn)].HasAttacker(this))
+            {
+                return false;
+            }
+            if (this[FindKingPoint(isWhiteTurn)].HasAttacker(this) && GetAvailablePieces(isWhiteTurn).Count == 0)
+            {
+                return false;
+            }
+
+
+
+                //}
+
+                //    //if (board[board.FindKingPoint(IsWhiteTurn)].HasAttacker(board))
+                //    //{
+                //    //    handleWin(!IsWhiteTurn);
+                //    //}
+                //    //else
+                //    //{
+                //    //    handleWin(null);
+                //    //}
+
+
+                return true;
+        }
     }
 
     //- class Board
