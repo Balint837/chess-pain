@@ -640,12 +640,21 @@ namespace sakk
 
         private void displayPieces()
         {
-            
+            foreach (UIElement b in chessBoard.Children)
+            {
+                if (b is Button)
+                {
+                    Grid buttonGrid = ((Button)b).Content as Grid;
+                    buttonGrid.Children.Clear();
+                }
+                
+            }
+
             foreach (ChessPiece piece in board)
             {
                 Button button = (Button)chessBoard.Children[piece.CurrentPosition.y * 8 + piece.CurrentPosition.x];
                 Grid buttonGrid = button.Content as Grid;
-                buttonGrid.Children.Clear();
+                
                 Image img = new Image();
                 img.MouseDown += drag_drop;
                 img.Source = piece.ImageByIdx;
@@ -659,6 +668,7 @@ namespace sakk
 
         private void MovePiece(Point from, Point to) {
             board[to] = board[from];
+
             if (board.Pieces.FindAll(x => x is King).Count < 2)
             {
                 if (board.Pieces.FindAll(x => x is King).Count == 0)
@@ -669,6 +679,11 @@ namespace sakk
                 {
                     handleWin(board.Pieces.Find(x => x is King).IsWhite);
                 }
+                return;
+            }
+            if (isInsufficientMaterial(true) && isInsufficientMaterial(false))
+            {
+                handleWin(null);
                 return;
             }
             if (board[to] is Pawn) {
@@ -686,6 +701,7 @@ namespace sakk
                 else if (to.y== (tempPiece.IsWhite ? 0 : 7))
                 {
                     pawnPromotion(to, tempPiece.IsWhite);
+                    IsWhiteTurn = !IsWhiteTurn;
                     gameInProgress = false;
                 }
             }
@@ -811,6 +827,7 @@ namespace sakk
 
         private void promotionPiece_Click(object sender, MouseButtonEventArgs e)
         {
+            IsWhiteTurn = !IsWhiteTurn;
             Image senderPiece = (Image)sender;
             ChessPiece newPiece;
             Point to = new Point(Grid.GetColumn(senderPiece.Parent as Grid), Grid.GetRow(senderPiece.Parent as Grid) + (IsWhiteTurn ? 3 : 0));
@@ -840,6 +857,7 @@ namespace sakk
             btnGrid.Children.Clear();
             Image img = new Image();
             img.Source = newPiece.ImageByIdx;
+            img.MouseDown += drag_drop;
             
             img.Tag = "move";
             btnGrid.Children.Add(img);
@@ -940,6 +958,7 @@ namespace sakk
             {
                 Button clickedButton = ((Grid)((Image)sender).Parent).Parent as Button;
                 Point p = new Point(Grid.GetColumn(clickedButton), Grid.GetRow(clickedButton));
+                
                 if (IsWhiteTurn != board[p].IsWhite)
                 {
                     return;
@@ -1060,7 +1079,50 @@ namespace sakk
             isPositionSetup = false;
             create = false;
             menuGrid.Children.Clear();
+            createBackToMainMenuButton();
             Timer.Start();
+        }
+
+        private void createBackToMainMenuButton()
+        {
+            Border border = new Border();
+            border.Name = "BacktoMainMenuBorder";
+            border.Margin = new Thickness(150, 10, 10, 150);
+
+            border.SetValue(Grid.RowProperty, 0);
+
+            
+            
+            
+            menuGrid.Children.Add(border);
+
+            Button button = new Button();
+            button.Style = (Style)FindResource("NoHoverButton");
+            button.Content = "↩";
+            
+            button.Click += backToMainMenu;
+            addBlackButtonStyles(button, border);
+            button.FontSize = 30;
+
+        }
+
+        private void backToMainMenu(object sender, RoutedEventArgs e)
+        {
+            gameInProgress = false;
+            isPositionSetup = false;
+            create = false;
+            menuGrid.Children.Clear();
+            createMenu();
+            resetBoardColor();
+            board.Clear();
+            board.SetDefaultChessPosition();
+            removeRemovables();
+            
+            displayPieces();
+            Timer.Stop();
+            ((Button)lbWhiteTimer.Child).Content = "10:00";
+            ((Button)lbBlackTimer.Child).Content = "10:00";
+
         }
 
         private void displayTimeOptions(object sender, RoutedEventArgs e)
