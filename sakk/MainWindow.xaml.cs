@@ -1110,6 +1110,7 @@ namespace sakk
         {
             gameInProgress = false;
             isPositionSetup = false;
+            IsWhiteTurn = true;
             create = false;
             menuGrid.Children.Clear();
             createMenu();
