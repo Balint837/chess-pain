@@ -770,7 +770,7 @@ namespace sakk
             img.MouseDown += drag_drop;
 
             IsWhiteTurn = !IsWhiteTurn;
-
+            checkIfWin();
 
 
 
