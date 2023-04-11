@@ -96,7 +96,7 @@ namespace sakk
         private bool isInsufficientMaterial(bool white)
         {
             bool isInsufficient = board.Pieces.Find(
-                        x => x.IsWhite = white &&
+                        x => x.IsWhite == white &&
                         (x.GetType() == typeof(Rook)
                         || x.GetType() == typeof(Pawn)
                         || x.GetType() == typeof(Queen)
@@ -105,7 +105,7 @@ namespace sakk
             {
                 return false;
             }
-            return board.Pieces.FindAll(x => x.IsWhite = white &&(x.GetType() == typeof(Knight)|| x.GetType() == typeof(Bishop))).Count <2;
+            return board.Pieces.FindAll(x => x.IsWhite == white &&(x.GetType() == typeof(Knight)|| x.GetType() == typeof(Bishop))).Count <2;
             
         }
 
@@ -669,6 +669,26 @@ namespace sakk
         private void MovePiece(Point from, Point to) {
             board[to] = board[from];
 
+            board.LegalMoves.Clear();
+            Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
+            Grid buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            button = (Button)chessBoard.Children[to.y * 8 + to.x];
+            buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            Image img = new Image();
+
+            img.Source = board[to].ImageByIdx;
+
+            img.Tag = "move";
+            board.selectedPiece = null;
+            buttonGrid.Children.Add(img);
+            img.MouseDown += drag_drop;
+
+            IsWhiteTurn = !IsWhiteTurn;
+
+
+
             if (board.Pieces.FindAll(x => x is King).Count < 2)
             {
                 if (board.Pieces.FindAll(x => x is King).Count == 0)
@@ -686,6 +706,11 @@ namespace sakk
                 handleWin(null);
                 return;
             }
+
+            
+
+
+
             if (board[to] is Pawn) {
                 var tempPiece = (Pawn)board[to];
                 if (tempPiece.IsFirstMove)
@@ -733,23 +758,7 @@ namespace sakk
                     ((Pawn)piece).mayBePassanted = false;
                 }
             }
-            board.LegalMoves.Clear();
-            Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
-            Grid buttonGrid = button.Content as Grid;
-            buttonGrid.Children.Clear();
-            button = (Button)chessBoard.Children[to.y * 8 + to.x];
-            buttonGrid = button.Content as Grid;
-            buttonGrid.Children.Clear();
-            Image img = new Image();
             
-            img.Source = board[to].ImageByIdx;
-            
-            img.Tag = "move";
-            board.selectedPiece = null;
-            buttonGrid.Children.Add(img);
-            img.MouseDown += drag_drop;
-
-            IsWhiteTurn = !IsWhiteTurn;
 
             if (!board.GetAvailablePieces(IsWhiteTurn).Any())
             {
