@@ -679,23 +679,7 @@ namespace sakk
         private void MovePiece(Point from, Point to) {
             board[to] = board[from];
 
-            board.LegalMoves.Clear();
-            Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
-            Grid buttonGrid = button.Content as Grid;
-            buttonGrid.Children.Clear();
-            button = (Button)chessBoard.Children[to.y * 8 + to.x];
-            buttonGrid = button.Content as Grid;
-            buttonGrid.Children.Clear();
-            Image img = new Image();
-
-            img.Source = board[to].ImageByIdx;
-
-            img.Tag = "move";
-            board.selectedPiece = null;
-            buttonGrid.Children.Add(img);
-            img.MouseDown += drag_drop;
-
-            IsWhiteTurn = !IsWhiteTurn;
+            
 
 
 
@@ -769,10 +753,26 @@ namespace sakk
                 }
             }
             checkIfWin();
+            board.LegalMoves.Clear();
+            Button button = (Button)chessBoard.Children[from.y * 8 + from.x];
+            Grid buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            button = (Button)chessBoard.Children[to.y * 8 + to.x];
+            buttonGrid = button.Content as Grid;
+            buttonGrid.Children.Clear();
+            Image img = new Image();
 
-            
-           
-            
+            img.Source = board[to].ImageByIdx;
+
+            img.Tag = "move";
+            board.selectedPiece = null;
+            buttonGrid.Children.Add(img);
+            img.MouseDown += drag_drop;
+
+            IsWhiteTurn = !IsWhiteTurn;
+
+
+
 
             resetBoardColor();
 
@@ -923,8 +923,12 @@ namespace sakk
                 }
                 else
                 {
-                    
-                        relocatePiece(board.selectedPiece.CurrentPosition, p);
+                    if (board.selectedPiece == null)
+                    {
+                        return;
+                    }
+
+                    relocatePiece(board.selectedPiece.CurrentPosition, p);
                     
                     
                     
@@ -963,14 +967,15 @@ namespace sakk
             img.Tag = "move";
             buttonGrid.Children.Add(img);
             img.MouseDown += drag_drop;
-            if (board.selectedPiece.GetType() == typeof(Pawn) )
+            ChessPiece piece = board[to];
+            if (piece.GetType() == typeof(Pawn) )
             {
-                if (board.selectedPiece.CurrentPosition.y != (board.selectedPiece.IsWhite ? 1 : 6))
+                if (piece.CurrentPosition.y != (piece.IsWhite ? 6 : 1))
                 {
-                    (board.selectedPiece as Pawn).IsFirstMove = false;
-                    if (board.selectedPiece.CurrentPosition.y == (board.selectedPiece.IsWhite ? 3 : 4))
+                    (piece as Pawn).IsFirstMove = false;
+                    if (piece.CurrentPosition.y == (piece.IsWhite ? 4 : 3))
                     {
-                        (board.selectedPiece as Pawn).mayBePassanted = true;
+                        (piece as Pawn).mayBePassanted = true;
                     }
                 }
             }
