@@ -593,7 +593,17 @@ namespace sakk
             ChessPiece piece = (ChessPiece)Activator.CreateInstance(type, to, board.selectedPiece.IsWhite);
             
             board[to] = piece;
-            
+            if (piece.GetType() == typeof(Pawn))
+            {
+                if (piece.CurrentPosition.y != (piece.IsWhite ? 6 : 1))
+                {
+                    (piece as Pawn).IsFirstMove = false;
+                    if (piece.CurrentPosition.y == (piece.IsWhite ? 4 : 3))
+                    {
+                        (piece as Pawn).mayBePassanted = true;
+                    }
+                }
+            }
             displayPieces();
 
         }
@@ -758,8 +768,18 @@ namespace sakk
                     ((Pawn)piece).mayBePassanted = false;
                 }
             }
+            checkIfWin();
+
+            
+           
             
 
+            resetBoardColor();
+
+        }
+
+        private void checkIfWin()
+        {
             if (!board.GetAvailablePieces(IsWhiteTurn).Any())
             {
                 if (board[board.FindKingPoint(IsWhiteTurn)].HasAttacker(board))
@@ -771,11 +791,6 @@ namespace sakk
                     handleWin(null);
                 }
             };
-           
-            
-
-            resetBoardColor();
-
         }
 
         private void pawnPromotion(Point to, bool IsWhite)
@@ -872,7 +887,7 @@ namespace sakk
             btnGrid.Children.Add(img);
             gameInProgress = true;
 
-
+            checkIfWin();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -948,8 +963,19 @@ namespace sakk
             img.Tag = "move";
             buttonGrid.Children.Add(img);
             img.MouseDown += drag_drop;
+            if (board.selectedPiece.GetType() == typeof(Pawn) )
+            {
+                if (board.selectedPiece.CurrentPosition.y != (board.selectedPiece.IsWhite ? 1 : 6))
+                {
+                    (board.selectedPiece as Pawn).IsFirstMove = false;
+                    if (board.selectedPiece.CurrentPosition.y == (board.selectedPiece.IsWhite ? 3 : 4))
+                    {
+                        (board.selectedPiece as Pawn).mayBePassanted = true;
+                    }
+                }
+            }
 
-            
+
 
             resetBoardColor();
         }
@@ -965,7 +991,12 @@ namespace sakk
         {
             if (gameInProgress)
             {
-                Button clickedButton = ((Grid)((Image)sender).Parent).Parent as Button;
+                Image img = (Image)sender;
+                if (img.Parent == null)
+                {
+                    return;
+                }
+                Button clickedButton = ((Grid)img.Parent).Parent as Button;
                 Point p = new Point(Grid.GetColumn(clickedButton), Grid.GetRow(clickedButton));
                 
                 if (IsWhiteTurn != board[p].IsWhite)
@@ -976,7 +1007,6 @@ namespace sakk
                 board.LegalMoves.Clear();
                 board.selectedPiece = board[p]!;
                 displayMoveOptions();
-                Image img = (Image)sender;
                 DragDrop.DoDragDrop(img, img, DragDropEffects.Move);
             }
             else if (isPositionSetup) {
