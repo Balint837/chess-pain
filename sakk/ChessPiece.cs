@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -20,12 +21,7 @@ namespace sakk
 
         public List<Point> GetAttackers(Board board)
         {
-
-            return Board.QueenEndpoints(board, CurrentPosition!)
-                .Where(p => board[p] != null && (board[p] is Pawn ? (board[p]!
-                .GetMovesDefending(board).Any(x => x == CurrentPosition!)) : (board[p]!
-                .GetMovesAvailable(board).Any(x => x == CurrentPosition!))))
-                .ToList();
+            return GetAttackers(board, CurrentPosition, IsWhite);
         }
         public bool HasAttacker(Board board)
         {
@@ -36,7 +32,8 @@ namespace sakk
         public List<Point> GetAttackers(Board board, Point point, bool? isWhite)
         {
 
-            return Board.QueenEndpoints(board, point, ignoreColor: true)
+            var knightResults = Board.KnightMoves(board, point, isWhite).Where(p => board[p] != null && board[p] is Knight && board[p]!.IsWhite != isWhite).ToList();
+            var queenResults = Board.QueenEndpoints(board, point, ignoreColor: true)
                 .Where(
                     ap => board[ap] != null
                     && (isWhite == null ? true : (board[ap].IsWhite != (bool)isWhite))
@@ -47,33 +44,35 @@ namespace sakk
                         (board[ap] is King ? (board[ap]!.GetMovesAll(board).Any(move => move == point!)) : (board[ap]!
                         .GetMovesAvailable(board).Any(move => move == point!)))))
                 .ToList();
+            return Utils.PointsOr(knightResults, queenResults);
         }
 
         public bool HasDefender(Board board)
         {
-
-            return Board.QueenEndpoints(board, this.CurrentPosition, ignoreColor: true)
+            var knightResult = Board.KnightMoves(board, CurrentPosition, !IsWhite).Where(p => board[p] != null && board[p] is Knight && board[p]!.IsWhite == IsWhite).Any();
+            var queenResult = Board.QueenEndpoints(board, this.CurrentPosition, ignoreColor: true)
                 .Where(
                     p => board[p] != null
                     && (board[p].IsWhite == this.IsWhite)
                     && board[p]!
                     .GetMovesDefending(board)
                     .Any(x => x == this.CurrentPosition))
-                .ToList().Any();
+                .Any();
+            return knightResult || queenResult;
         }
 
 
-        public bool HasDefenderNull(Board board, Point position, bool IsWhite)
-        {
-            return Board.QueenEndpoints(board, this.CurrentPosition, ignoreColor: true)
-                .Where(
-                    p => board[p] != null
-                    && (board[p].IsWhite == this.IsWhite)
-                    && board[p]!
-                    .GetMovesDefending(board)
-                    .Any(x => x == this.CurrentPosition))
-                .ToList().Any();
-        }
+        //public bool HasDefenderNull(Board board, Point position, bool IsWhite)
+        //{
+        //    return Board.QueenEndpoints(board, this.CurrentPosition, ignoreColor: true)
+        //        .Where(
+        //            p => board[p] != null
+        //            && (board[p].IsWhite == this.IsWhite)
+        //            && board[p]!
+        //            .GetMovesDefending(board)
+        //            .Any(x => x == this.CurrentPosition))
+        //        .ToList().Any();
+        //}
         public bool HasAttacker(Board board, Point point, bool? isWhite)
         {
             return GetAttackers(board, point, isWhite).Count != 0;

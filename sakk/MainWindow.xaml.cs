@@ -97,16 +97,21 @@ namespace sakk
         {
             bool isInsufficient = board.Pieces.Find(
                         x => x.IsWhite == white &&
-                        (x.GetType() == typeof(Rook)
-                        || x.GetType() == typeof(Pawn)
-                        || x.GetType() == typeof(Queen)
+                        (x is Rook
+                        || x is Pawn
+                        || x is Queen
                         )) == null;
             if (!isInsufficient)
             {
                 return false;
             }
-            return board.Pieces.FindAll(x => x.IsWhite == white &&(x.GetType() == typeof(Knight)|| x.GetType() == typeof(Bishop))).Count <2;
+            return board.Pieces.FindAll(x => x.IsWhite == white &&(x.GetType() == typeof(Knight)|| x.GetType() == typeof(Bishop))).Count < 2;
             
+        }
+
+        private bool IsKingPresent(bool white)
+        {
+            return board.Pieces.Any(x => x is King && x.IsWhite == white);
         }
 
         
@@ -679,11 +684,7 @@ namespace sakk
         private void MovePiece(Point from, Point to) {
             board[to] = board[from];
 
-            
-
-
-
-            if (board.Pieces.FindAll(x => x is King).Count < 2)
+            if (!(IsKingPresent(true) && IsKingPresent(false)))
             {
                 if (board.Pieces.FindAll(x => x is King).Count == 0)
                 {
