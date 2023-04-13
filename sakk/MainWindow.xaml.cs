@@ -95,18 +95,7 @@ namespace sakk
 
         private bool isInsufficientMaterial(bool white)
         {
-            bool isInsufficient = board.Pieces.Find(
-                        x => x.IsWhite == white &&
-                        (x is Rook
-                        || x is Pawn
-                        || x is Queen
-                        )) == null;
-            if (!isInsufficient)
-            {
-                return false;
-            }
-            return board.Pieces.FindAll(x => x.IsWhite == white &&(x.GetType() == typeof(Knight)|| x.GetType() == typeof(Bishop))).Count < 2;
-            
+            return board.isInsufficientMaterial(white);
         }
 
         private bool IsKingPresent(bool white)
@@ -697,6 +686,11 @@ namespace sakk
                 return;
             }
             if (isInsufficientMaterial(true) && isInsufficientMaterial(false))
+            {
+                handleWin(null);
+                return;
+            }
+            if (board.Pieces.Count(x => x is King) != 2)
             {
                 handleWin(null);
                 return;

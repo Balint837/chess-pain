@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -337,9 +338,16 @@ namespace sakk
 
         internal bool isLegalPosition(bool isWhiteTurn)
         {
-            if(Pieces.FindAll(x => x is King).Count < 2)
-            { 
-
+            if (Pieces.Count(x => x is King) != 2)
+            {
+                return false;
+            }
+            if (!(Pieces.Any(x => x is King && x.IsWhite == true) && Pieces.Any(x => x is King && x.IsWhite == false)))
+            {
+                return false;
+            }
+            if (isInsufficientMaterial(true) && isInsufficientMaterial(false))
+            {
                 return false;
             }
             if (this[FindKingPoint(!isWhiteTurn)].HasAttacker(this))
@@ -350,22 +358,23 @@ namespace sakk
             {
                 return false;
             }
+            return true;
+        }
 
 
-
-                //}
-
-                //    //if (board[board.FindKingPoint(IsWhiteTurn)].HasAttacker(board))
-                //    //{
-                //    //    handleWin(!IsWhiteTurn);
-                //    //}
-                //    //else
-                //    //{
-                //    //    handleWin(null);
-                //    //}
-
-
-                return true;
+        internal bool isInsufficientMaterial(bool white)
+        {
+            bool isInsufficient = Pieces.Find(
+                        x => x.IsWhite == white &&
+                        (x is Rook
+                        || x is Pawn
+                        || x is Queen
+                        )) == null;
+            if (!isInsufficient)
+            {
+                return false;
+            }
+            return Pieces.FindAll(x => x.IsWhite == white && (x is Knight || x is Bishop)).Count < 2;
         }
     }
 
