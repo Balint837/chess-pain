@@ -124,6 +124,14 @@ namespace sakk
 
             if ((xp == 0 && yp == 0) || (xp != 0 && yp != 0 && Math.Abs(p1.x - p2.x) != Math.Abs(p1.y - p2.y)))
             {
+                if (forceInclusiveStart)
+                {
+                    result.Add(new Point(p1.x, p1.y));
+                }
+                if (forceInclusiveEnd)
+                {
+                    result.Add(new Point(p2.x, p2.y));
+                }
                 return allowInvalid ? InvalidQueryResult() : result;
             }
 
