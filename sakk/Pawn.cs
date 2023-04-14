@@ -144,5 +144,34 @@ namespace sakk
 
             return Utils.FilterPoints(result);
         }
+
+        public override List<Point> GetMovesFinal(Board board)
+        {
+            var result = base.GetMovesFinal(board);
+            var attackers = board[board.FindKingPoint(IsWhite)].GetAttackers(board);
+            if (attackers.Count != 1)
+            {
+                return result;
+            }
+            foreach (var move in attackers)
+            {
+                var temp = board[move];
+                if (temp != null && temp is Pawn)
+                {
+                    Pawn temp2 = (Pawn)temp;
+                    if (temp2.mayBePassanted)
+                    {
+                        var p1 = new Point(CurrentPosition.x - 1, CurrentPosition.y);
+                        var p2 = new Point(CurrentPosition.x + 1, CurrentPosition.y);
+
+                        if (temp2.CurrentPosition == p1 || temp2.CurrentPosition == p2)
+                        {
+                            result.Add(new Point(temp2.CurrentPosition.x, temp2.CurrentPosition.y + (IsWhite ? -1 : 1)));
+                        }
+                    }
+                }
+            }
+            return result;
+        }
     }
 }
