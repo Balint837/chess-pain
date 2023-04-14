@@ -71,7 +71,7 @@ namespace sakk
             {
                 if (minutes == 0)
                 {
-                    if(isInsufficientMaterial(IsWhiteTurn))
+                    if(isInsufficientMaterial(!IsWhiteTurn))
                     {
                         handleWin(null);
                         return;
@@ -381,7 +381,7 @@ namespace sakk
                     checkBox.IsChecked = false;
                     return;
                 }
-                if (piece.GetType() == typeof(Rook))
+                if (piece is Rook)
                 {
                     Rook rook = (Rook)piece;
                     rook.IsFirstMove = checkBox.IsChecked == true;
@@ -536,7 +536,7 @@ namespace sakk
 
         private void updateCheckboxes(ChessPiece piece)
         {
-            if ( piece == null || !(piece.GetType() == typeof(Rook) && ((Rook)piece).IsFirstMove == true))
+            if ( piece == null || !(piece is Rook && ((Rook)piece).IsFirstMove == true))
             {
                 return;
             }
@@ -587,7 +587,7 @@ namespace sakk
             ChessPiece piece = (ChessPiece)Activator.CreateInstance(type, to, board.selectedPiece.IsWhite);
             
             board[to] = piece;
-            if (piece.GetType() == typeof(Pawn))
+            if (piece is Pawn)
             {
                 if (piece.CurrentPosition.y != (piece.IsWhite ? 6 : 1))
                 {
@@ -963,7 +963,7 @@ namespace sakk
             buttonGrid.Children.Add(img);
             img.MouseDown += drag_drop;
             ChessPiece piece = board[to];
-            if (piece.GetType() == typeof(Pawn) )
+            if (piece is Pawn)
             {
                 if (piece.CurrentPosition.y != (piece.IsWhite ? 6 : 1))
                 {
